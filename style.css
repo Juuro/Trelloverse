@@ -1,0 +1,29 @@
+body {
+  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+.badge.green { background-color: green; }
+.badge.red { background-color: red; }
+.badge.blue { background-color: blue; }
+.badge.purple { background-color: purple; }
+.badge.yellow { background-color: yellow; }
+.badge.orange { background-color: orange; }
+.badge { margin-right: 5px; }
+
+img.members {
+  float: right;
+  margin-left: 5px;
+}
+
+.comments img.members {
+  float: none;
+  margin-left: none;
+}
+
+ul.pic-list li {
+  list-style: none;
+}
+
+.label img {
+  margin-top: -4px;
+}
