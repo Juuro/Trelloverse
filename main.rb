@@ -3,13 +3,11 @@
 require 'json'
 require 'open-uri'
 require 'pp'
-require 'rdiscount'
-require 'kramdown'
 require './functions.rb'
 
 
 #website aufrufen
-list = open("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key=0ccb4b07c006c5d5555a55b64a124c89&token=e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba&filter=open").read
+list = open("https://api.trello.com/1/boards/4f68a4ab343ec61a754ad64e/lists?key=0ccb4b07c006c5d5555a55b64a124c89&token=e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba&filter=open").read
 
 #JSON in Ruby-Object umwandeln
 data = JSON.parse(list)
@@ -63,8 +61,7 @@ fileHtml.puts "\t\t\t<p class=\"lead\"></p>"
 fileHtml.puts "\t\t</header>"
 
 fileHtml.puts "\t\t<div class=\"row\">"
-#for element in data[0]['cards'] do  
-for element in data do  
+for element in data[0]['cards'] do  
   fileHtml.puts "\t\t\t<div class=\"span12 well\">"
   
   #members
@@ -111,16 +108,15 @@ for element in data do
   fileHtml.puts "\t\t\t\t</h2>"
   
   #description
-  element['desc'] = Kramdown::Document.new(element['desc'])
-  fileHtml.puts "\t\t\t\t"+element['desc'].to_html+"\n\n"
+  fileHtml.puts "\t\t\t\t<p class=\"article\">"+element['desc']+"</p>\n\n"
   
   #checklist
-  hasChecklist = getChecklist(element['id'])    
+  hasChecklist = getChecklist(element['id'])  
   if hasChecklist[0] != nil
-    for checklist in hasChecklist do      
+    for checklist in hasChecklist do
       fileHtml.puts "\t\t\t\t<h3>"+checklist['name']+"</h3>"
       fileHtml.puts "\t\t\t\t<ul>"
-      for item in checklist['checkItems']        
+      for item in checklist['checkitems']
         if isCompleted(element['id'], item['id'])
           fileHtml.puts "\t\t\t\t\t<li><del>"+item['name']+"</del></li>"
         else
@@ -173,7 +169,6 @@ for element in data do
   actions = getCardActions(element['id'])
   
   if !actions.empty?
-    fileHtml.puts "\t\t\t\t<hr>"
     fileHtml.puts "\t\t\t\t<h3>Comments</h3>"
     fileHtml.puts "\t\t\t\t<div class=\"comments\">"
     
