@@ -21,6 +21,13 @@ def getAttachment(cardId)
 	return data
 end
 
+def getList(listId)
+	list = open("https://api.trello.com/1/lists/"+listId+"?key="+@key+"&token="+@token).read
+	list = JSON.parse(list)
+	
+	return list	
+end
+
 def getSingleCard(cardId)
 	card = open("https://api.trello.com/1/cards/"+cardId+"?key="+@key+"&token="+@token).read
 	card = JSON.parse(card)
@@ -55,11 +62,19 @@ def getCardActions(cardId)
 	actions = JSON.parse(actions)
 end
 
-def trelloToJoomla(title, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion)
+def trelloToJoomla(title, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
+	
+	if attachments != nil
+		description << "<ul>"
+		i = 0
+		while i < attachments.length do
+			description << "<li><a href=\""+attachments[i]['url']+"\">\""+attachments[i]['name']+"\"</a></li>"
+			i += 1
+		end
+		description << "</ul>"
+	end
 
-	titlemenu = title+'menu'
-	jalias = title.downcase
-	jaliasmenu = jalias+'menu'	
+	jalias = title.downcase	
 
 	if joomlaVersion == 2.5
 		#debug
@@ -68,7 +83,7 @@ def trelloToJoomla(title, description='<p>NO U!</p>', attachments=Hash.new, joom
 		#DB connection
 		my = Mysql.connect('localhost', 'root', 'jMuaeObS4a', 'joomla')
 
-		stmt = my.prepare("INSERT INTO e94bi_content (asset_id, title, alias, introtext, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access, language) VALUES (170, '"+title+"', '"+jalias+"', '<p>Grill it like its hot!</p>', '"+description+"', 1, 0, 19, '2012-03-13 16:07:06', 42, 0, 0, 1, '*')")
+		stmt = my.prepare("INSERT INTO e94bi_content (asset_id, title, alias, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access, language) VALUES (170, '"+title+"', '"+jalias+"', '"+description+"', 1, 0, 19, '2012-03-13 16:07:06', 42, 0, 0, 1, '*')")
 		stmt.execute
 
 		id = nil
@@ -77,7 +92,7 @@ def trelloToJoomla(title, description='<p>NO U!</p>', attachments=Hash.new, joom
 			id = thisid[0]
 		end
 
-		stmt = my.prepare("INSERT INTO e94bi_menu (menutype, title, alias, path, link, type, published, parent_id, level, component_id, access, lft, rgt, language) VALUES('aboutjoomla', '"+titlemenu+"', '"+jaliasmenu+"', 'getting-started/"+jaliasmenu+"', 'index.php?option=com_content&view=article&id="+id+"', 'component', 1, 437, 2, 22, 1, 44, 45, '*')")
+		stmt = my.prepare("INSERT INTO e94bi_menu (menutype, title, alias, path, link, type, published, parent_id, level, component_id, access, lft, rgt, language) VALUES('aboutjoomla', '"+title+"', '"+jalias+"', 'getting-started/"+jalias+"', 'index.php?option=com_content&view=article&id="+id+"', 'component', 1, 437, 2, 22, 1, 44, 45, '*')")
 		stmt.execute
 
 		my.close if my
@@ -89,7 +104,7 @@ def trelloToJoomla(title, description='<p>NO U!</p>', attachments=Hash.new, joom
 		#DB connection
 		my = Mysql.connect('localhost', 'root', 'jMuaeObS4a', 'joomla15')
 
-		stmt = my.prepare("INSERT INTO jos_content (title, alias, introtext, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access) VALUES ('"+title+"', '"+jalias+"', '<p>Grill it like its hot!</p>', '"+description+"', 1, 4, 29, '2012-03-13 16:07:06', 62, 0, 1, 0)")
+		stmt = my.prepare("INSERT INTO jos_content (title, alias, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access) VALUES ('"+title+"', '"+jalias+"', '"+description+"', 1, 4, 29, '2012-03-13 16:07:06', 62, 0, 1, 0)")
 		stmt.execute
 
 		id = nil
@@ -100,7 +115,7 @@ def trelloToJoomla(title, description='<p>NO U!</p>', attachments=Hash.new, joom
 
 		stmt = my.prepare("INSERT INTO jos_menu 
 		(menutype, name, alias, link, type, published, parent, componentid, sublevel, access, lft, rgt) VALUES
-		('mainmenu', '"+titlemenu+"', '"+jaliasmenu+"', 'index.php?option=com_content&view=article&id="+id+"', 'component', 1, 27, 20, 1, 0, 0, 0)")
+		('mainmenu', '"+title+"', '"+jalias+"', 'index.php?option=com_content&view=article&id="+id+"', 'component', 1, 27, 20, 1, 0, 0, 0)")
 		stmt.execute
 		
 		my.close if my

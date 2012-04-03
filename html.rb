@@ -3,16 +3,16 @@
 require 'json'
 require 'open-uri'
 require 'pp'
-require 'rdiscount'
 require 'kramdown'
 require './functions.rb'
 
+@listId = "4f68a4ab343ec61a754ad652"
 
 #website aufrufen
-list = open("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key=0ccb4b07c006c5d5555a55b64a124c89&token=e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba&filter=open").read
+listCards = open("https://api.trello.com/1/lists/"+@listId+"/cards?key=0ccb4b07c006c5d5555a55b64a124c89&token=e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba&filter=open").read
 
 #JSON in Ruby-Object umwandeln
-data = JSON.parse(list)
+data = JSON.parse(listCards)
 
 #=begin
 
@@ -26,7 +26,10 @@ fileHtml.puts "<!-- "+time.hour.to_s+":"+time.min.to_s+" "+time.day.to_s+"."+tim
 fileHtml.puts "<html>"
 fileHtml.puts "<head>"
 fileHtml.puts "\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
-fileHtml.puts "\t<title>Trello List "+data[0]['name']+"</title>"
+
+title = getList(@listId)
+
+fileHtml.puts "\t<title>Trello List "+title['name']+"</title>"
 fileHtml.puts "\t<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"bootstrap.css\">"
 fileHtml.puts "\t<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"style.css\">"
 fileHtml.puts "<link rel=\"stylesheet\" href=\"js/fancybox/jquery.fancybox-1.3.4.css\" type=\"text/css\" media=\"screen\" />"
@@ -45,7 +48,7 @@ fileHtml.puts "\t\t\t</a>"
 fileHtml.puts "\t\t\t<a class=\"brand\" href=\"#\">Trello</a>"
 fileHtml.puts "\t\t\t<div class=\"nav-collapse\">"
 fileHtml.puts "\t\t\t\t<ul class=\"nav\">"
-fileHtml.puts "\t\t\t\t\t<li class=\"active\"><a href=\"#\">"+data[0]['name']+"</a></li>"
+fileHtml.puts "\t\t\t\t\t<li class=\"active\"><a href=\"#\">"+title['name']+"</a></li>"
 fileHtml.puts "\t\t\t\t\t<li class=\"\"><a href=\"#\">Test 1</a></li>"
 fileHtml.puts "\t\t\t\t\t<li class=\"\"><a href=\"#\">Test 2</a></li>"
 fileHtml.puts "\t\t\t\t</ul>"
@@ -58,7 +61,7 @@ fileHtml.puts "</div>"
 fileHtml.puts "<div class=\"container\">"
 
 fileHtml.puts "\t\t<header class=\"jumbotron subhead\" id=\"overview\">"
-fileHtml.puts "\t\t\t<h1>"+data[0]['name']+"</h1>"
+fileHtml.puts "\t\t\t<h1>"+title['name']+"</h1>"
 fileHtml.puts "\t\t\t<p class=\"lead\"></p>"
 fileHtml.puts "\t\t</header>"
 
