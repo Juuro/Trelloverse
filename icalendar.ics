@@ -1,0 +1,136 @@
+BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+PRODID:iCalendar-Ruby
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+BEGIN:STANDARD
+DTSTART:20060811T073001
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+TZNAME:GMT+01:00
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4f615c06100bd75819ea19df
+DTEND;TZID=Europe/Berlin:20120513
+DTSTAMP:20120601T015059
+DTSTART;TZID=Europe/Berlin:20120513
+LOCATION:https://trello.com/card/duedate-in-google-calendar/4f615b946dfee52
+ 54c33ceb9/3
+SEQUENCE:1
+SUMMARY:DueDate in Google Calendar
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:50:59+02:00_842294073@juuroair
+URL:https://trello.com/card/duedate-in-google-calendar/4f615b946dfee5254c33
+ ceb9/3
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4f828ba08f9c41e822785314
+DTEND;TZID=Europe/Berlin:20120409
+DTSTAMP:20120601T015100
+DTSTART;TZID=Europe/Berlin:20120409
+LOCATION:https://trello.com/card/couchsurfing/4f68ba5868134a30414b8709/19
+SEQUENCE:1
+SUMMARY:Couchsurfing
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:51:00+02:00_231061180@juuroair
+URL:https://trello.com/card/couchsurfing/4f68ba5868134a30414b8709/19
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4f68a65958843df908765e7e
+DTEND;TZID=Europe/Berlin:20120511
+DTSTAMP:20120601T015102
+DTSTART;TZID=Europe/Berlin:20120511
+LOCATION:https://trello.com/card/this-card-has-everything/4f68a4ab343ec61a7
+ 54ad64e/8
+SEQUENCE:1
+SUMMARY:This card has everything
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:51:02+02:00_973288772@juuroair
+URL:https://trello.com/card/this-card-has-everything/4f68a4ab343ec61a754ad6
+ 4e/8
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4f68a881fbcccaf5084b1ab3
+DTEND;TZID=Europe/Berlin:20120511
+DTSTAMP:20120601T015102
+DTSTART;TZID=Europe/Berlin:20120511
+LOCATION:https://trello.com/card/this-card-is-assigned-to-more-than-one-per
+ son/4f68a4ab343ec61a754ad64e/9
+SEQUENCE:1
+SUMMARY:This card is assigned to more than one person
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:51:02+02:00_936767633@juuroair
+URL:https://trello.com/card/this-card-is-assigned-to-more-than-one-person/4
+ f68a4ab343ec61a754ad64e/9
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4f68a60358843df90875f21b
+DTEND;TZID=Europe/Berlin:20120514
+DTSTAMP:20120601T015102
+DTSTART;TZID=Europe/Berlin:20120514
+LOCATION:https://trello.com/card/this-card-has-a-due-date/4f68a4ab343ec61a7
+ 54ad64e/4
+SEQUENCE:1
+SUMMARY:This card has a due date
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:51:02+02:00_698505724@juuroair
+URL:https://trello.com/card/this-card-has-a-due-date/4f68a4ab343ec61a754ad6
+ 4e/4
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4fac68b33840da43351c8f0f
+DTEND;TZID=Europe/Berlin:20120531
+DTSTAMP:20120601T015102
+DTSTART;TZID=Europe/Berlin:20120531
+LOCATION:https://trello.com/card/larmen/4f68a4ab343ec61a754ad64e/17
+SEQUENCE:1
+SUMMARY:Lärmen!
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:51:02+02:00_734368194@juuroair
+URL:https://trello.com/card/larmen/4f68a4ab343ec61a754ad64e/17
+END:VEVENT
+BEGIN:VEVENT
+ATTENDEE:mail@sebastian-engel.de
+ATTENDEE:juuro@me.com
+ATTENDEE:bla@blu.de
+CATEGORIES:FAMILY
+DESCRIPTION:4facdcf92c494fed27116217
+DTEND;TZID=Europe/Berlin:20120530
+DTSTAMP:20120601T015102
+DTSTART;TZID=Europe/Berlin:20120530
+LOCATION:https://trello.com/card/testen/4f68a4ab343ec61a754ad64e/18
+SEQUENCE:1
+SUMMARY:Testen
+TRANSP:TRANSPARENT
+UID:2012-06-01T01:51:02+02:00_554507964@juuroair
+URL:https://trello.com/card/testen/4f68a4ab343ec61a754ad64e/18
+END:VEVENT
+END:VCALENDAR
