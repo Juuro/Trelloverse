@@ -3,18 +3,41 @@ require 'open-uri'
 require 'pp'
 require 'kramdown'
 require './functions.rb'
+require './classes/JoomlaMultiple.rb'
 
 
 # listId of the list whose cards should be imported to Joomla
 listId = '4f68a4ab343ec61a754ad652'
 
-#website aufrufen
-list = open("https://api.trello.com/1/lists/"+listId+"/cards?key=0ccb4b07c006c5d5555a55b64a124c89&token=e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba&filter=open").read
+options = JoomlaMultiple.parse(ARGV)
 
-#JSON in Ruby-Object umwandeln
-data = JSON.parse(list)
+cardsToImport = Array.new
 
-data.each do |card|	
+if !options.lists.nil?
+	options.lists.each do |listId|
+		cardByList = JSON.parse(getCardsByList(listId))
+		cardsToImport = cardsToImport|cardByList
+	end
+end
+
+if !options.boards.nil?
+	options.boards.each do |boardId|
+		cardsByBoard = JSON.parse(getCardsByBoard(boardId))
+		cardsToImport = cardsToImport|cardsByBoard
+	end
+end
+
+if !options.cards.nil?
+	options.cards.each do |cardId|
+		cardsByCard = getSingleCard(cardId)
+		cardsToImport.push(cardsByCard)
+	end
+end
+
+sectionid = options.section.first
+catid = options.category.first
+
+cardsToImport.each do |card|	
 
 	title = card['name']
 	card['desc'] = Kramdown::Document.new(card['desc'])
@@ -51,9 +74,9 @@ data.each do |card|
 	#end attachment
 
 	if attHash != nil	
-		trelloToJoomlaMultiple(title, created, cardId, description, attachments)
+		trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description, attachments)
 	else
-		trelloToJoomlaMultiple(title, created, cardId, description)
+		trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description)
 	end
 
 	attHash = nil

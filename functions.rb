@@ -112,7 +112,13 @@ def cardCreated(cardId)
 	updates = JSON.parse(reply.body)
 end
 
+def getCardsByBoard(boardId)
+	board = open("https://api.trello.com/1/boards/"+boardId+"/cards?key="+@key+"&token="+@token+"&filter=open").read
+end
 
+def getCardsByList(listId)
+	list = open("https://api.trello.com/1/lists/"+listId+"/cards?key="+@key+"&token="+@token+"&filter=open").read
+end
 
 
 
@@ -221,7 +227,7 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 end
 
 
-def trelloToJoomlaMultiple(title, created, cardId, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
+def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
 
 	if attachments != nil
 		description << "<ul>"
@@ -300,8 +306,8 @@ def trelloToJoomlaMultiple(title, created, cardId, description='<p>NO U!</p>', a
 					'"+jalias+"', 
 					'"+description+"', 
 					1, 
-					5, 
-					34, 
+					'"+sectionid+"', 
+					'"+catid+"', 
 					'"+created+"', 
 					62, 
 					'"+created+"',
