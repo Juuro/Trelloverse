@@ -1,0 +1,11 @@
+# Trelloverse
+Trelloverse is a small Ruby API-wrapper with several usecases.
+
+At the moment there are these fully functional uses:
+* Import Trello cards to one article in Joomla (1.5 or 2.5)
+* Import Trello each card as single article in Joomla (1.5 or 2.5)
+* Backup: Export and Import (JSON)
+* Export Trello cards to an HTML file
+* Import Trello cards with due dates to Google Calendar
+* Export Trello cards to an iCal file
+* Close all boards 
