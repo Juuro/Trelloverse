@@ -120,7 +120,7 @@ for element in data do
   #checklist
   hasChecklist = getChecklist(element['id'])    
   if hasChecklist[0] != nil
-    for checklist in hasChecklist do      
+    hasChecklist.each do |checklist|    
       fileHtml.puts "\t\t\t\t<h3>"+checklist['name']+"</h3>"
       fileHtml.puts "\t\t\t\t<ul>"
       for item in checklist['checkItems']        

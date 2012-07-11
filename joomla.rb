@@ -37,4 +37,4 @@ data.each do |element|
 	articles << newArticle
 end
 
-trelloToJoomlaSingle(articles, 285)
+trelloToJoomlaSingle(285, articles)

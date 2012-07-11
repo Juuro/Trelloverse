@@ -3,10 +3,26 @@
 
 require 'mysql'
 require 'pp'
+require 'rest_client'
 
 @key = "0ccb4b07c006c5d5555a55b64a124c89"
 @token = "e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba"
 
+def getDate(date, format='de')
+	# ISO-8601 to German/US date
+	formattedDate = Time.new
+	formattedDate = Time.iso8601(date)
+	
+	if format=='de'
+		return formattedDate.strftime('%d.%m.%Y %H:%M:%S')
+	elsif format=='us'
+		return formattedDate.strftime('%m/%d/%Y %I.%M.%S %P')
+	elsif format=='joomla'
+		return formattedDate.strftime('%Y-%m-%d %H:%M:%S')
+	else
+		return formattedDate
+	end
+end
 
 def getChecklist(cardId)
 	checklists = open("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+@key+"&token="+@token).read
@@ -20,6 +36,12 @@ def getAttachment(cardId)
 	data = JSON.parse(attachments)
 
 	return data
+end
+
+def getLists(idBoard)
+	list = open("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+@key+"&token="+@token).read
+	
+	return list
 end
 
 def getList(listId)
@@ -40,12 +62,10 @@ def isCompleted(cardId, itemId)
 	completedItems = open("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+@key+"&token="+@token).read
 	completedItems = JSON.parse(completedItems)
 
-	for item in completedItems
-
+	completedItems.each do |item|
 		if item['idCheckItem'] == itemId
 			return true
 		end
-
 	end
 
 	return false
@@ -58,12 +78,62 @@ def getMember(memberId)
 	return member
 end
 
+def isThisMe(memberId)
+	if getMember('me')['id'] == memberId
+		return true
+	else
+		return false
+	end
+end
+
 def getCardActions(cardId)
 	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?key="+@key+"&token="+@token).read
 	actions = JSON.parse(actions)
 end
 
-def trelloToJoomlaSingle(articles=[], joomlaArticleId)
+def getCardComments(cardId)
+	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+@key+"&token="+@token).read
+	actions = JSON.parse(actions)
+end
+
+def cardUpdated(cardId)
+	reply = RestClient.get(
+			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+@key+'&token='+@token
+	)
+
+	updates = JSON.parse(reply.body)
+end
+
+def cardCreated(cardId)
+	reply = RestClient.get(
+			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+@key+'&token='+@token
+	)
+
+	updates = JSON.parse(reply.body)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def trelloToJoomlaSingle(joomlaArticleId, articles)
 	htmlSite = "<h3>Universität Tübingen</h3>"
 	
 	htmlSite << "<p> </p>
@@ -150,60 +220,182 @@ def trelloToJoomlaSingle(articles=[], joomlaArticleId)
 	
 end
 
-def trelloToJoomlaMultiple(articles=[], joomlaVersion = 1.5)
-	
-	articles.each do |element|
-		title = element.title
-		jalias = element.jalias
-		description = element.description
-		if element.attachments != []		
-			attachments = element.attachments
+
+def trelloToJoomlaMultiple(title, created, cardId, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
+
+	if attachments != nil
+		description << "<ul>"
+		i = 0
+		while i < attachments.length do
+			description << "<li><a href=\""+attachments[i]['url']+"\">\""+attachments[i]['name']+"\"</a></li>"
+			i += 1
+		end
+		description << "</ul>"
+	end
+
+	jalias = title.downcase	
+
+	if joomlaVersion == 2.5
+		#debug
+		puts "Joomla! 2.5"
+
+		#DB connection
+		my = Mysql.init
+		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
+		my.real_connect('localhost', 'root', 'jMuaeObS4a', 'joomla')
+		my.query("SET NAMES utf8")
+		
+		stmt = my.prepare("INSERT INTO e94bi_content (asset_id, title, alias, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access, language) VALUES (170, '"+title+"', '"+jalias+"', '"+description+"', 1, 0, 19, '"+created+"', 42, 0, 0, 1, '*')")
+		stmt.execute
+
+		newArticleId = nil
+		my.query("SELECT id FROM e94bi_content WHERE created='"+created+"' AND title='"+title+"'").each do |thisid|
+			pp thisid
+			newArticleId = thisid[0]
 		end
 
-		if joomlaVersion == 2.5
-			#debug
-			puts "Joomla! 2.5"
-	
-			#DB connection
-			my = Mysql.connect('localhost', 'root', 'jMuaeObS4a', 'joomla')
-	
-			stmt = my.prepare("INSERT INTO e94bi_content (asset_id, title, alias, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access, language) VALUES (170, '"+title+"', '"+jalias+"', '"+description+"', 1, 0, 19, '2012-03-13 16:07:06', 42, 0, 0, 1, '*')")
-			stmt.execute
-	
-			id = nil
-			my.query("SELECT id FROM e94bi_content WHERE created='2012-03-13 16:07:06' AND title='"+title+"'").each do |thisid|
-				pp thisid
-				id = thisid[0]
-			end
-	
-			stmt = my.prepare("INSERT INTO e94bi_menu (menutype, title, alias, path, link, type, published, parent_id, level, component_id, access, lft, rgt, language) VALUES('aboutjoomla', '"+title+"', '"+jalias+"', 'getting-started/"+jalias+"', 'index.php?option=com_content&view=article&id="+id+"', 'component', 1, 437, 2, 22, 1, 44, 45, '*')")
-			stmt.execute
-	
-			my.close if my
-	
-		elsif joomlaVersion == 1.5
-			#debug
-			puts "Joomla! 1.5"
-	
-			#DB connection
-			my = Mysql.connect('localhost', 'root', 'jMuaeObS4a', 'joomla15')
-	
-			stmt = my.prepare("INSERT INTO jos_content (title, alias, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access) VALUES ('"+title+"', '"+jalias+"', '"+description+"', 1, 4, 29, '2012-03-13 16:07:06', 62, 0, 1, 0)")
-			stmt.execute
-	
-			id = nil
-			my.query("SELECT id FROM jos_content WHERE created='2012-03-13 16:07:06' AND title='"+title+"'").each do |thisid|
-				pp thisid
-				id = thisid[0]
-			end
-	
-			stmt = my.prepare("INSERT INTO jos_menu 
-			(menutype, name, alias, link, type, published, parent, componentid, sublevel, access, lft, rgt) VALUES
-			('mainmenu', '"+title+"', '"+jalias+"', 'index.php?option=com_content&view=article&id="+id+"', 'component', 1, 27, 20, 1, 0, 0, 0)")
+		stmt = my.prepare("INSERT INTO e94bi_menu (menutype, title, alias, path, link, type, published, parent_id, level, component_id, access, lft, rgt, language) VALUES('aboutjoomla', '"+title+"', '"+jalias+"', 'getting-started/"+jalias+"', 'index.php?option=com_content&view=article&id="+newArticleId+"', 'component', 1, 437, 2, 22, 1, 44, 45, '*')")
+		stmt.execute
+
+		my.close if my
+
+	elsif joomlaVersion == 1.5
+		#debug
+		#puts "Joomla! 1.5"
+
+		#DB connection
+		my = Mysql.init
+		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
+		my.real_connect('localhost', 'root', 'jMuaeObS4a', 'joomla15')
+		my.query("SET NAMES utf8")
+
+		# checking if this acrticle already exists
+		existingArticle = nil
+		existingArticleQuery = my.query("
+			SELECT id, created, modified
+			FROM jos_content 
+			WHERE metadata='"+cardId+"'
+		")
+		
+		# if article doesn't exist insert it into the db
+		if existingArticleQuery.num_rows == 0
+			stmt = my.prepare("
+				INSERT INTO jos_content (
+					title, 
+					alias, 
+					`introtext`, 
+					state, 
+					sectionid, 
+					catid, 
+					created, 
+					created_by, 
+					modified,
+					parentid, 
+					ordering, 
+					access,
+					metadata
+				) 
+				VALUES (
+					'"+title+"', 
+					'"+jalias+"', 
+					'"+description+"', 
+					1, 
+					5, 
+					34, 
+					'"+created+"', 
+					62, 
+					'"+created+"',
+					0, 
+					1, 
+					0,
+					'"+cardId+"'
+				)
+			")
 			stmt.execute
 			
-			my.close if my
-	
+			# identify id of the new article
+			newArticleId = nil
+			newArticles = my.query("
+				SELECT id 
+				FROM jos_content 
+				WHERE created='"+created+"' 
+				AND title='"+title+"'
+			")
+			newArticles.each do |thisid|
+				newArticleId = thisid[0]
+			end
+			
+			# insert the new article into the menu
+			stmt = my.prepare("
+				INSERT INTO jos_menu (
+					menutype,
+					name, 
+					alias, 
+					link, 
+					type, 
+					published, 
+					parent, 
+					componentid, 
+					sublevel, 
+					access, 
+					lft, 
+					rgt) 
+				VALUES (
+					'mainmenu', 
+					'"+title+"', 
+					'"+jalias+"', 
+					'index.php?option=com_content&view=article&id="+newArticleId+"', 
+					'component', 
+					1, 
+					27, 
+					20, 
+					1, 
+					0, 
+					0, 
+					0
+				)
+			")
+			stmt.execute
+			pp cardId+': New article!'
+		else
+			# this should be only one because per Trello card id should only exist one article in Joomla
+			existingArticleQuery.each do |thisArticle|				
+				
+				existingId = thisArticle[0]
+				existingCreated = thisArticle[1]
+				existingModified = thisArticle[2]
+				
+				# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla
+				if existingModified != created
+					stmt = my.prepare("
+						UPDATE jos_content 
+						SET
+							title = '"+title+"',
+							alias = '"+jalias+"',
+							`introtext` = '"+description+"',
+							state = 1,
+							sectionid = 5,
+							catid = 34,
+							created = '"+created+"',
+							created_by = 62,
+							modified = '"+created+"',
+							parentid = 0,
+							ordering = 1,
+							access = 0
+						WHERE
+							metadata = '"+cardId+"'
+					")
+					stmt.execute
+					pp cardId+': Changed!'
+				else 
+					pp cardId+': Nothing changed.'
+				end
+				
+				#exit
+			end
 		end
+		
+		my.close if my
+
 	end
 end
