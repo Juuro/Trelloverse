@@ -5,9 +5,6 @@ require 'mysql'
 require 'pp'
 require 'rest_client'
 
-@key = "0ccb4b07c006c5d5555a55b64a124c89"
-@token = "e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba"
-
 def getDate(date, format='de')
 	# ISO-8601 to German/US date
 	formattedDate = Time.new
@@ -24,42 +21,31 @@ def getDate(date, format='de')
 	end
 end
 
-def getChecklist(cardId)
-	checklists = open("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+@key+"&token="+@token).read
+def getChecklist(cardId, key, token)
+	checklists = open("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+key+"&token="+token).read
 	data = JSON.parse(checklists)
 
 	return data  
 end
 
-def getAttachment(cardId)
-	attachments = open("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+@key+"&token="+@token).read
+def getAttachment(cardId, key, token)
+	attachments = open("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+key+"&token="+token).read
 	data = JSON.parse(attachments)
 
 	return data
 end
 
-def getLists(idBoard)
-	list = open("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+@key+"&token="+@token).read
-	
-	return list
+def getLists(idBoard, key, token)
+	list = open("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+key+"&token="+token).read
 end
 
-def getList(listId)
-	list = open("https://api.trello.com/1/lists/"+listId+"?key="+@key+"&token="+@token).read
-	list = JSON.parse(list)
-	
-	return list	
+def getList(listId, key, token)
+	list = open("https://api.trello.com/1/lists/"+listId+"?key="+key+"&token="+token).read
+	list = JSON.parse(list)	
 end
 
-def getSingleCard(cardId)
-	card = open("https://api.trello.com/1/cards/"+cardId+"?key="+@key+"&token="+@token).read
-	card = JSON.parse(card)
-
-	return card
-end
-
-def isCompleted(cardId, itemId)
-	completedItems = open("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+@key+"&token="+@token).read
+def isCompleted(cardId, itemId, key, token)
+	completedItems = open("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+key+"&token="+token).read
 	completedItems = JSON.parse(completedItems)
 
 	completedItems.each do |item|
@@ -71,56 +57,175 @@ def isCompleted(cardId, itemId)
 	return false
 end
 
-def getMember(memberId)
-	member = open("https://api.trello.com/1/members/"+memberId+"?key="+@key+"&token="+@token+"&filter=open").read
+def getMember(memberId, key, token)
+	member = open("https://api.trello.com/1/members/"+memberId+"?key="+key+"&token="+token+"&filter=open").read
 	member = JSON.parse(member)
 
 	return member
 end
 
-def isThisMe(memberId)
-	if getMember('me')['id'] == memberId
+def isThisMe(memberId, key, token)
+	if getMember('me', key, token)['id'] == memberId
 		return true
 	else
 		return false
 	end
 end
 
-def getCardActions(cardId)
-	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?key="+@key+"&token="+@token).read
+def getCardActions(cardId, key, token)
+	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?key="+key+"&token="+token).read
 	actions = JSON.parse(actions)
 end
 
-def getCardComments(cardId)
-	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+@key+"&token="+@token).read
+def getCardComments(cardId, key, token)
+	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+key+"&token="+token).read
 	actions = JSON.parse(actions)
 end
 
-def cardUpdated(cardId)
+def cardUpdated(cardId, key, token)
 	reply = RestClient.get(
-			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+@key+'&token='+@token
+			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+key+'&token='+token
 	)
 
 	updates = JSON.parse(reply.body)
 end
 
-def cardCreated(cardId)
+def cardCreated(cardId, key, token)
 	reply = RestClient.get(
-			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+@key+'&token='+@token
+			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+key+'&token='+token
 	)
 
 	updates = JSON.parse(reply.body)
 end
 
-def getCardsByBoard(boardId)
-	board = open("https://api.trello.com/1/boards/"+boardId+"/cards?key="+@key+"&token="+@token+"&filter=open").read
+def getSingleCard(cardId, key, token)
+	card = open("https://api.trello.com/1/cards/"+cardId+"?key="+key+"&token="+token).read
+	card = JSON.parse(card)
 end
 
-def getCardsByList(listId)
-	list = open("https://api.trello.com/1/lists/"+listId+"/cards?key="+@key+"&token="+@token+"&filter=open").read
+def getCardsByBoard(boardId, key, token)
+	board = open("https://api.trello.com/1/boards/"+boardId+"/cards?key="+key+"&token="+token+"&filter=open").read
+	board = JSON.parse(board)
 end
 
+def getCardsByList(listId, key, token)
+	list = open("https://api.trello.com/1/lists/"+listId+"/cards?key="+key+"&token="+token+"&filter=open").read
+	list = JSON.parse(list)
+end
 
+def getCardsAsArray(arrayCardsStd, key, token, downloads = true)
+	arrayCardsFull = Array.new
+	directoryNameAttachments = File.join(Dir.tmpdir, "attachments")
+	
+	arrayCardsStd.each do |card|
+		# export members
+		memberArray = Array.new
+		card['idMembers'].each do |memberId|
+			member = getMember(memberId, key, token)
+			memberArray << member			
+		end
+		membersForCard = Hash.new
+		membersForCard['members'] = memberArray
+		card = card.merge(membersForCard)
+		# end export members		
+		
+		# export checklists
+		hasChecklist = getChecklist(card['id'], key, token) 
+		
+		if hasChecklist[0] != nil
+			arrayChecklists = Array.new
+			hasChecklist.each do |checklist|  
+				hashChecklist = Hash.new  
+				hashChecklist['id'] = checklist['id']
+				hashChecklist['name'] = checklist['name']
+				arrayItems = Array.new
+				checklist['checkItems'].each do |item|
+					hashItem = Hash.new
+					hashItem['name'] = item['name']
+					if isCompleted(card['id'], item['id'], key, token)
+						hashItem['completed'] = true
+					else
+						hashItem['completed'] = false
+					end
+					hashItem['pos'] = item['pos']
+					arrayItems.push(hashItem)
+				end
+				hashChecklist['items'] = arrayItems
+				arrayItems = nil
+				arrayChecklists.push(hashChecklist)
+				hashChecklist = nil
+			end
+			
+			hashCheckListsForCard = Hash.new
+			hashCheckListsForCard['checklists'] = arrayChecklists
+			
+			card = card.merge(hashCheckListsForCard)
+		end
+		# end export checklists
+		
+		# export comments
+		if card['badges']['comments'] != 0
+			comments = getCardComments(card['id'], key, token)
+			hashCommentsForCard = Hash.new			
+			hashCommentsForCard['commentsContent'] = comments			
+			card = card.merge(hashCommentsForCard)
+		end
+		# end export comments
+		
+		# export attachments
+		if card['badges']['attachments'] != 0
+			attachments = getAttachment(card['id'], key, token)			
+			hashAttachmentsForCard = Hash.new			
+			hashAttachmentsForCard['attachments'] = attachments			
+			card = card.merge(hashAttachmentsForCard)			
+			
+			if downloads
+				# url runterladen
+				attachments.each do |attachment|
+					fileDomain = URI.parse(attachment['url']).host
+					filePath = attachment['url'].gsub(URI.parse(attachment['url']).scheme+"://"+URI.parse(attachment['url']).host, '')
+					fileExtension = File.extname(attachment['url'])
+					
+					fileName = attachment['id']+File.basename(attachment['url'])
+					puts "Downloading \'"+fileName+"\'"
+								
+					if !Dir.exists?(directoryNameAttachments)
+						Dir::mkdir(directoryNameAttachments)
+					end
+					
+					Net::HTTP.start(fileDomain) do |http|
+							resp = http.get(filePath)
+							open(directoryNameAttachments+"/"+fileName, "wb") do |file|
+									file.write(resp.body)
+							end
+					end      
+				end
+				# url runterladen
+			end       
+		end	
+		# end export attachments
+		
+		# export votes
+		if card['badges']['votes'] > 0
+			reply = RestClient.get(
+					'https://api.trello.com/1/cards/'+card['id']+'/membersVoted?key='+key+'&token='+token
+			)
+			members = JSON.parse(reply)
+			membersVotedArray = Array.new
+			members.each do |member|
+				 membersVotedArray.push(member['id'])
+			end
+			hashMembersVotedForCard = Hash.new			
+			hashMembersVotedForCard['membersVoted'] = membersVotedArray
+			card = card.merge(hashMembersVotedForCard)	
+		end
+		# end export votes
+		
+		arrayCardsFull.push(card)
+	end
+	
+	return arrayCardsFull
+end
 
 
 
@@ -228,7 +333,7 @@ end
 
 
 def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
-
+	
 	if attachments != nil
 		description << "<ul>"
 		i = 0
@@ -298,13 +403,13 @@ def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description
 					modified,
 					parentid, 
 					ordering, 
-					access,
+					access,					
 					metadata
-				) 
+				)
 				VALUES (
 					'"+title+"', 
 					'"+jalias+"', 
-					'"+description+"', 
+					'"+description.gsub(/'/, '&#39;')+"', 
 					1, 
 					'"+sectionid+"', 
 					'"+catid+"', 
@@ -317,6 +422,9 @@ def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description
 					'"+cardId+"'
 				)
 			")
+			
+			pp stmt
+			
 			stmt.execute
 			
 			# identify id of the new article
@@ -378,7 +486,7 @@ def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description
 						SET
 							title = '"+title+"',
 							alias = '"+jalias+"',
-							`introtext` = '"+description+"',
+							`introtext` = '"+description.gsub(/'/, '&#39;')+"',
 							state = 1,
 							sectionid = 5,
 							catid = 34,

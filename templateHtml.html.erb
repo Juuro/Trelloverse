@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Trello List <%= @title %></title>
+  <link rel="stylesheet" type="text/css" media="screen" href="bootstrap.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="style.css">
+<link rel="stylesheet" href="js/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">Trello</a>
+      <div class="nav-collapse">
+      <!--
+        <ul class="nav">
+          <li class="active"><a href="#"><%= @title %></a></li>
+        </ul>
+      -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <header class="jumbotron subhead" id="overview">
+    <h1><%= @title %></h1>
+    <p class="lead"></p>
+  </header>
+  <div class="row">    
+  
+  <% @cards.each do |card| %>
+    <div class="span12 well">   
+    
+      <!-- members -->
+      <% if !card['members'].empty? %>
+        <% card['members'].each do |member| %>         
+          <a href="<%= member['url'] %>" title="<%= member['fullName'] %>" rel="tooltip">
+          <% if member['avatarHash'] %>
+            <img src="https://trello-avatars.s3.amazonaws.com/<%= member['avatarHash'] %>/30.png" class="members" alt="<%= member['fullName'] %>">
+          <% else %>
+            <img src="img/noavatar.png" class="members" alt="<%= member['fullName'] %>">
+          <% end %>
+          </a>
+        <% end %>
+      <% end %>
+      <!-- end members -->
+      
+      <!-- badges/labels -->  
+      <h2>
+        <%= card['name'] %>
+        <% if card['due'] %>
+          <small><%= getDate(card['due'], format='de') %></small>
+        <% end %>
+        <% if card['labels'] %>
+          <% card['labels'].each do |label| %>
+            <small><span class="badge <%= label['color'] %> "></span></small>
+          <% end %>
+        <% end %>
+        <% if card['commentsContent'] %>
+          <span class="label"><%= card['commentsContent'].length %> <img src="img/comment-icon.png"></span>
+        <% end %>
+        <% if card['badges']['votes'] != 0 %>
+          <small>
+            <%= card['badges']['votes'].to_s %>
+            <% if card['badges']['votes'] > 1 %>
+              votes
+            <% else %>
+              vote
+            <% end %>          
+          </small>
+        <% end %>
+      </h2>
+      <!-- end badges/labels -->
+      
+      <!-- description -->
+      <%= Kramdown::Document.new(card['desc']).to_html %>
+      
+      <!-- checklists -->
+      <% if card['checklists'] != nil %>
+        <% card['checklists'].each do |checklist| %>
+          <h3><%= checklist['name'] %></h3>
+          <ul>
+          <% checklist['items'].each do |item| %>
+            <% if item['completed'] %>
+              <li><del><%= item['name'] %></del></li>
+            <% else %>
+              <li><%= item['name'] %></li>
+            <% end %>
+          <% end %>
+          </ul>
+        <% end %>
+      <% end %>  
+      <!-- end checklists -->    
+      
+      <!-- attachments -->
+      <% photos = Hash.new %>
+      <% if card['attachments'] != nil %>
+        <% c = 0 %>
+        <h3>Attachments</h3>
+        <% card['attachments'].each do |attachment| %>
+          <% url = attachment['url'] %>
+          <ul>
+          <% if url.end_with?('JPEG') || url.end_with?('jpeg') || url.end_with?('JPG') || url.end_with?('jpg') || url.end_with?('PNG') || url.end_with?('png')  || url.end_with?('GIF') || url.end_with?('gif') || url.end_with?('TIFF')|| url.end_with?('tiff') || url.end_with?('PSD') || url.end_with?('psd') %>
+            
+            <% attHash = Hash.new %>
+            <% attHash['url'] = url %>
+            <% attHash['name'] = attachment['name'] %>
+            
+            <% photos[c] = attHash %>
+            <% c += 1 %>
+          <% else %>
+            <li><a href="<%= attachment['url'] %>"><%= attachment['name'] %></a></li>
+          <% end %>
+          </ul>
+        <% end %>
+        
+        <% if !photos.empty? %>
+          <h3>Photos</h3>
+          <ul class="pic-list thumbnails">
+          <% i = 0 %>
+          <% while i < photos.length do %>
+            <li class="span2"><a href="<%= photos[i]['url'] %>" class="thumbnail grouped_elements" rel="<%= card['id'] %>"><img src="<%= photos[i]['url'] %>" alt="<%= photos[i]['name'] %>" title="<%= photos[i]['name'] %>"></a></li>
+            <% i += 1 %>
+          <% end %>
+          </ul>
+        <% end %>
+      <% end %>
+      <% photos = nil %>
+      <!-- end attachments -->
+      
+      <!-- comments -->
+      <% if card['commentsContent'] != nil %>
+        <hr>              
+        <h3>Comments</h3>
+        <div class="comments">
+          <% card['commentsContent'].each do |comment| %>
+            <h4><%= comment['memberCreator']['fullName'] %> 
+            <a href="https://trello.com/<%= comment['memberCreator']['username'] %>" title="<%= comment['memberCreator']['fullName'] %>" rel="tooltip">
+            <% if comment['memberCreator']['avatarHash'] %>
+              <img src="https://trello-avatars.s3.amazonaws.com/<%= comment['memberCreator']['avatarHash'] %>/30.png" class="members" alt="<%= comment['memberCreator']['fullName'] %>">
+            <% else %>
+              <img src="img/noavatar.png" class="members" alt="<%= comment['memberCreator']['fullName'] %>">
+            <% end %>
+            </a>
+            </h4>
+            <p><%= comment['data']['text'] %></p>
+          <% end %>
+        </div>
+      <% end %>
+      <!-- end comments -->      
+      
+    </div>
+  <% end %>    
+    
+  </div>
+  <hr>
+  <footer>
+    <p>&copy; Company 2012</p>
+  </footer>
+</div>
+<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap-tooltip.js"></script>
+<script src="js/application.js"></script>
+<script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<script type="text/javascript" src="js/fancybox/jquery.easing-1.3.pack.js"></script>
+</body>
+</html>

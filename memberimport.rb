@@ -10,9 +10,20 @@ require 'uri'
 require 'zippy'
 require 'rest_client'
 require './functions.rb'
+require './classes/CLimport.rb'
 
-@key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
-@token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
+options = CLimport.parse(ARGV)
+
+@key = options.key.first
+@token = options.token.first
+
+# debug
+#@key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
+#@token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
+
+# In case you want to put you key and token in the file uncomment the following lines and enter your data1.
+#@key = 'PUT YOUR KEY HERE'
+#@token = 'PUT YOUR TOKEN HERE'
 
 cardsRelation = Hash.new
 boardsRelation = Hash.new
@@ -34,7 +45,7 @@ cardsOld = backup['cards']
 
 puts "\n----- IMPORT MEMBERS -----\n\n"
 
-puts "Please visit http://www.trello.com. Login as "+getMember('me')['username']+" ("+getMember('me')['id']+")! Add the following members to the corresponding boards MANUALLY.\n"
+puts "Please visit http://www.trello.com. Login as "+getMember('me', @key, @token)['username']+" ("+getMember('me', @key, @token)['id']+")! Add the following members to the corresponding boards MANUALLY.\n"
 
 boardsOld.each do |board|
 
