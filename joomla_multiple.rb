@@ -5,7 +5,6 @@ require 'kramdown'
 require './functions.rb'
 require './classes/CLJoomlaMultiple.rb'
 
-
 options = CLJoomlaMultiple.parse(ARGV)
 
 @key = options.key.first
@@ -39,6 +38,16 @@ if !options.cards.nil?
 	options.cards.each do |cardId|
 		cardsByCard = getSingleCard(cardId, @key, @token)
 		cardsToImport.push(cardsByCard)
+	end
+end
+
+if options.all == true
+	boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+	boards = JSON.parse(boards)
+
+	boards.each do |board|
+		cardsByBoard = getCardsByBoard(board['id'], @key, @token)
+		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
 

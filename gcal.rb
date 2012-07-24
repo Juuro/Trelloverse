@@ -8,7 +8,7 @@ require 'pp'
 require 'json'
 require 'open-uri'
 require './functions.rb'
-require './classes/CLcalendar.rb'
+require './classes/CLgcal.rb'
 
 options = CLcalendar.parse(ARGV)
 
@@ -56,7 +56,7 @@ if options.all == true
 	end
 end
 
-cardsFull = getCardsAsArray(cardsToImport, @key, @token, false)
+#cardsFull = getCardsAsArray(cardsToImport, @key, @token, false)
 
 
 
@@ -75,7 +75,7 @@ service = client.discovered_api('calendar', 'v3')
 
 
 
-cardsFull.each do |card|
+cardsToImport.each do |card|
 	
 	if card['due'] != nil		
 		getevents = client.execute(:api_method => service.events.list,
@@ -131,7 +131,7 @@ cardsFull.each do |card|
 						
 						puts "\""+card['name']+"\" ("+card['id']+") event changed!"
 					else
-						puts "\""+card['name']+"\" ("+card['id']+") not changed!"
+						#puts "\""+card['name']+"\" ("+card['id']+") event not changed!"
 					end					
 				end
 			end
@@ -144,4 +144,5 @@ cardsFull.each do |card|
 		end		
 	end
 end
-#=end
+
+puts "Done!"

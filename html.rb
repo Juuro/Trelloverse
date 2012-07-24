@@ -43,6 +43,16 @@ if !options.cards.nil?
   end
 end
 
+if options.all == true
+  boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+  boards = JSON.parse(boards)
+
+  boards.each do |board|
+    cardsByBoard = getCardsByBoard(board['id'], @key, @token)
+    cardsToImport = cardsToImport|cardsByBoard
+  end
+end
+
 if !options.title.empty?
   @htmlTitle = options.title.first
 end

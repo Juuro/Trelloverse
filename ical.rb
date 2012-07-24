@@ -8,7 +8,7 @@ require 'pp'
 require 'json'
 require 'open-uri'
 require './functions.rb'
-require './classes/CLcalendar.rb'
+require './classes/CLical.rb'
 
 options = CLcalendar.parse(ARGV)
 

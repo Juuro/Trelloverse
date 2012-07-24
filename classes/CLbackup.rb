@@ -6,7 +6,7 @@ require 'optparse/time'
 require 'ostruct'
 require 'pp'
 
-class CLHtml
+class CLbackup
 
   CODES = %w[iso-2022-jp shift_jis euc-jp utf8 binary]
   CODE_ALIASES = { "jis" => "iso-2022-jp", "sjis" => "shift_jis" }
@@ -21,34 +21,14 @@ class CLHtml
     options.title = []
     options.key = []
     options.token = []
-    options.all = false
     options.encoding = "utf8"
 
     opts = OptionParser.new do |opts|
-      opts.banner = "Usage: html.rb [options]"
-      opts.separator "Select the input cards with -c, -l, -b or -a"
+      opts.banner = "Usage: import.rb [options]"
+
       opts.separator ""
       opts.separator "Specific options:"
-    
-      # All due dates of all cards of all boards.
-      opts.on("-a", "--[no-]all", "Set this if all due dates of all cards of all boards this user can see shall be used.") do |all|
-        options.all = all
-      end
-      
-      # Trello list(s)
-      opts.on("-l", "--lists x,y,z", Array, "Ids of one or more Trello lists.") do |lists|
-        options.lists = lists
-      end
 
-      # Trello board(s)
-      opts.on("-b", "--boards x,y,z", Array, "Ids of one or more Trello boards.") do |boards|
-        options.boards = boards
-      end
-      
-      # Trello card(s)
-      opts.on("-c", "--cards x,y,z", Array, "Ids of one or more Trello cards.") do |cards|
-        options.cards = cards
-      end
       
       # Trello key
       opts.on("-k MANDATORY, --key", "Your Trello key.") do |key|
@@ -58,11 +38,6 @@ class CLHtml
       # Trello token
       opts.on("-t MANDATORY, --token", "The Trello token.") do |token|
         options.token << token
-      end
-      
-      # Title of the HTML site.
-      opts.on("--title MANDATORY", "A title of the HTML site.") do |title|
-        options.title << title
       end
 
     end

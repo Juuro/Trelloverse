@@ -1,13 +1,10 @@
 #!/usr/bin/ruby
 #Encoding: UTF-8
 
-require 'pp'
+require './functions.rb'
 
-test1 = Array.new
-test2 = [ ]
 
-pp test1
 
-pp "lala"
+$brotzeit = 'September'
 
-pp test2
+testMethod()
