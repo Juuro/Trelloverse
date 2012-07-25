@@ -21,15 +21,37 @@ class CLbackup
     options.title = []
     options.key = []
     options.token = []
+    options.all = false
     options.encoding = "utf8"
-
+    
     opts = OptionParser.new do |opts|
-      opts.banner = "Usage: import.rb [options]"
-
+      opts.banner = "Usage: export.rb [options]"
+    
       opts.separator ""
       opts.separator "Specific options:"
-
       
+=begin
+      # All due dates of all cards of all boards.
+      opts.on("-a", "--[no-]all", "Set this if all due dates of all cards of all boards this user can see shall be used.") do |all|
+        options.all = all
+      end
+      
+      # Trello list(s)
+      opts.on("-l", "--lists x,y,z", Array, "Ids of one or more Trello lists.") do |lists|
+        options.lists = lists
+      end
+      
+      # Trello board(s)
+      opts.on("-b", "--boards x,y,z", Array, "Ids of one or more Trello boards.") do |boards|
+        options.boards = boards
+      end
+      
+      # Trello card(s)
+      opts.on("-c", "--cards x,y,z", Array, "Ids of one or more Trello cards.") do |cards|
+        options.cards = cards
+      end
+=end
+
       # Trello key
       opts.on("-k MANDATORY, --key", "Your Trello key.") do |key|
         options.key << key

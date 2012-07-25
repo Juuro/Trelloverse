@@ -10,9 +10,9 @@ require 'uri'
 require 'zippy'
 require 'rest_client'
 require './functions.rb'
-require './classes/CLimport.rb'
+require './classes/CLbackup.rb'
 
-options = CLimport.parse(ARGV)
+options = CLbackup.parse(ARGV)
 
 @key = options.key.first
 @token = options.token.first
