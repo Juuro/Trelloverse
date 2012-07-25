@@ -9,45 +9,45 @@ require './classes/CLJoomlaMultiple.rb'
 
 options = CLJoomlaMultiple.parse(ARGV)
 
-@key = '0ccb4b07c006c5d5555a55b64a124c89'
-@token = 'e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba'
+$key = '0ccb4b07c006c5d5555a55b64a124c89'
+$token = 'e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba'
 
 
 cardsToImport = Array.new
 
 if !options.lists.nil?
 	options.lists.each do |listId|
-		cardByList = getCardsByList(listId, @key, @token)
+		cardByList = getCardsByList(listId)
 		cardsToImport = cardsToImport|cardByList
 	end
 end
 
 if !options.boards.nil?
 	options.boards.each do |boardId|
-		cardsByBoard = getCardsByBoard(boardId, @key, @token)
+		cardsByBoard = getCardsByBoard(boardId)
 		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
 
 if !options.cards.nil?
 	options.cards.each do |cardId|
-		cardsByCard = getSingleCard(cardId, @key, @token)
+		cardsByCard = getSingleCard(cardId)
 		cardsToImport.push(cardsByCard)
 	end
 end
 
 if options.all == true
-	boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+	boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
 	boards = JSON.parse(boards)
 
 	boards.each do |board|
-		cardsByBoard = getCardsByBoard(board['id'], @key, @token)
+		cardsByBoard = getCardsByBoard(board['id'])
 		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
 
 #website aufrufen
-list = open("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key="+@key+"&token="+@token+"&filter=open").read
+list = open("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key="+$key+"&token="+$token+"&filter=open").read
 
 articles = []
 
@@ -58,7 +58,7 @@ cardsToImport.each do |element|
 	description = Kramdown::Document.new(element['desc']).to_html
 	
 	#attachment
-	hasAttachment = getAttachment(element['id'], @key, @token) 
+	hasAttachment = getAttachment(element['id']) 
 	attachments = []
 	if hasAttachment[0] != nil
 		for attachmentArray in hasAttachment do			

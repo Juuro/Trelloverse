@@ -10,48 +10,48 @@ require './classes/CLJoomlaMultiple.rb'
 
 options = CLJoomlaMultiple.parse(ARGV)
 
-@key = options.key.first
-@token = options.token.first
+$key = options.key.first
+$token = options.token.first
 
-puts "Member: "+getMember('me', @key, @token)['username']
+puts "Member: "+getMember('me')['username']
 
 # debug
-#@key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
-#@token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
+#$key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
+#$token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
 
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
-#@key = 'PUT YOUR KEY HERE'
-#@token = 'PUT YOUR TOKEN HERE'
+#$key = 'PUT YOUR KEY HERE'
+#$token = 'PUT YOUR TOKEN HERE'
 
 cardsToImport = Array.new
 
 if !options.lists.nil?
   options.lists.each do |listId|
-    cardByList = getCardsByList(listId, @key, @token)
+    cardByList = getCardsByList(listId)
     cardsToImport = cardsToImport|cardByList
   end
 end
 
 if !options.boards.nil?
   options.boards.each do |boardId|
-    cardsByBoard = getCardsByBoard(boardId, @key, @token)
+    cardsByBoard = getCardsByBoard(boardId)
     cardsToImport = cardsToImport|cardsByBoard
   end
 end
 
 if !options.cards.nil?
   options.cards.each do |cardId|
-    cardsByCard = getSingleCard(cardId, @key, @token)
+    cardsByCard = getSingleCard(cardId)
     cardsToImport.push(cardsByCard)
   end
 end
 
 if options.all == true
-  boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+  boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
   boards = JSON.parse(boards)
 
   boards.each do |board|
-    cardsByBoard = getCardsByBoard(board['id'], @key, @token)
+    cardsByBoard = getCardsByBoard(board['id'])
     cardsToImport = cardsToImport|cardsByBoard
   end
 end
@@ -67,14 +67,14 @@ cardsToImport.each do |card|
   cardId = card['id']
 
   created = nil
-  if !cardUpdated(card['id'], @key, @token).empty?
-    created = getDate(cardUpdated(card['id'], @key, @token).first['date'], 'joomla')
+  if !cardUpdated(card['id']).empty?
+    created = getDate(cardUpdated(card['id']).first['date'], 'joomla')
   else
-    created = getDate(cardCreated(card['id'], @key, @token).first['date'], 'joomla')
+    created = getDate(cardCreated(card['id']).first['date'], 'joomla')
   end
 
   #attachment
-  hasAttachment = getAttachment(card['id'], @key, @token) 
+  hasAttachment = getAttachment(card['id']) 
   attachments = Hash.new 
   if hasAttachment[0] != nil
     c = 0

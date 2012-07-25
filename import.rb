@@ -14,16 +14,16 @@ require './classes/CLbackup.rb'
 
 options = CLbackup.parse(ARGV)
 
-@key = options.key.first
-@token = options.token.first
+$key = options.key.first
+$token = options.token.first
 
 # debug
-#@key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
-#@token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
+#$key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
+#$token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
 
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
-# @key = 'PUT YOUR KEY HERE'
-# @token = 'PUT YOUR TOKEN HERE'
+# $key = 'PUT YOUR KEY HERE'
+# $token = 'PUT YOUR TOKEN HERE'
 
 fileJson = nil
 hashBoards = Hash.new
@@ -61,8 +61,8 @@ fileJson['boards'].each do |board|
 										'prefs_invitations' => prefs['invitations'],
 										'prefs_comments' => prefs['comments'],
 										'prefs_voting' => prefs['voting'],
-										'key'=>@key,
-										'token'=>@token)
+										'key'=>$key,
+										'token'=>$token)
 	
 	Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 		response = http.request(req) # Net::HTTPResponse object	
@@ -82,7 +82,7 @@ end
 
 puts "\n----- IMPORT MEMBERS -----\n\n"
 
-puts "Please visit http://www.trello.com. Login as "+getMember('me', @key, @token)['username']+" ("+getMember('me', @key, @token)['id']+")! Add the following members to the corresponding boards MANUALLY.\n"
+puts "Please visit http://www.trello.com. Login as "+getMember('me')['username']+" ("+getMember('me')['id']+")! Add the following members to the corresponding boards MANUALLY.\n"
 
 fileJson['members'].each do |board|
 
@@ -97,7 +97,7 @@ puts "\nIf you have added all necessary members to your boards press ENTER to co
 gets
 
 fileJson['members'].each do |board|	
-	membersNewBoard = open("https://api.trello.com/1/boards/"+hashBoards[board['id']]+"/members?key="+@key+"&token="+@token+"").read
+	membersNewBoard = open("https://api.trello.com/1/boards/"+hashBoards[board['id']]+"/members?key="+$key+"&token="+$token+"").read
 	membersNewBoard = JSON.parse(membersNewBoard)	
 	
 	missingMembers = board['members'] - membersNewBoard
@@ -116,7 +116,7 @@ puts "\n----- CLOSE STANDARD LISTS -----\n\n"
 
 #delete the standard lists which are created by Trello when creating a board
 hashBoards.each do |key, value| 
-	lists = open("https://api.trello.com/1/boards/"+value+"/lists?key="+@key+"&token="+@token+"").read
+	lists = open("https://api.trello.com/1/boards/"+value+"/lists?key="+$key+"&token="+$token+"").read
 	lists = JSON.parse(lists)	
 
 	lists.each do |list|	
@@ -125,8 +125,8 @@ hashBoards.each do |key, value|
 		uri = URI('https://api.trello.com/1/lists/'+list['id']+'/closed')
 		req = Net::HTTP::Put.new(uri.path)
 		req.set_form_data('value' => 'true',
-											'key'=>@key,
-											'token'=>@token)
+											'key'=>$key,
+											'token'=>$token)
 
 		Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 			response = http.request(req)
@@ -145,8 +145,8 @@ fileJson['lists'].each do |list|
 	
 	req.set_form_data('name' => list['name'], 
 										'idBoard' => hashBoards[list['idBoard']],
-										'key'=>@key,
-										'token'=>@token)
+										'key'=>$key,
+										'token'=>$token)
 
 	Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 		response = http.request(req) # Net::HTTPResponse object	
@@ -171,8 +171,8 @@ fileJson['cards'].each do |card|
 										'desc' => card['desc'],
 										'pos' => card['pos'],
 										'idList' => hashLists[card['idList']],
-										'key'=>@key,
-										'token'=>@token)
+										'key'=>$key,
+										'token'=>$token)
 
 	Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 		response = http.request(req) # Net::HTTPResponse object	
@@ -189,8 +189,8 @@ fileJson['cards'].each do |card|
 			RestClient.post(
 					'https://api.trello.com/1/cards/'+hashCards[card['id']]+'/members',
 					:value   => member,
-					:key     => @key,
-					:token   => @token
+					:key     => $key,
+					:token   => $token
 			)
 			puts "\tMember \""+member+"\" added!"
 		rescue => e
@@ -209,8 +209,8 @@ fileJson['cards'].each do |card|
 			
 			reqChecklists.set_form_data('name' => checklist['name'],
 												'idBoard'=>hashBoards[card['idBoard']],
-												'key'=>@key,
-												'token'=>@token)
+												'key'=>$key,
+												'token'=>$token)
 			
 			Net::HTTP.start(uriChecklists.host, uriChecklists.port, :use_ssl => uriChecklists.scheme == 'https') do |http|
 				responseChecklists = http.request(reqChecklists) # Net::HTTPResponse object
@@ -224,8 +224,8 @@ fileJson['cards'].each do |card|
 			reqCheckAdd = Net::HTTP::Post.new(uriCheckAdd.path)
 			
 			reqCheckAdd.set_form_data('value' => checklistId,
-												'key'		=>	@key,
-												'token'	=>	@token)
+												'key'		=>	$key,
+												'token'	=>	$token)
 			
 			Net::HTTP.start(uriCheckAdd.host, uriCheckAdd.port, :use_ssl => uriCheckAdd.scheme == 'https') do |http|
 				responseCheckAdd = http.request(reqCheckAdd) # Net::HTTPResponse object
@@ -238,8 +238,8 @@ fileJson['cards'].each do |card|
 				reqCheckItems = Net::HTTP::Post.new(uriCheckItems.path)
 				
 				reqCheckItems.set_form_data('name' => item['name'],
-													'key'=>@key,
-													'token'=>@token)
+													'key'=>$key,
+													'token'=>$token)
 				
 				Net::HTTP.start(uriCheckItems.host, uriCheckItems.port, :use_ssl => uriCheckItems.scheme == 'https') do |http|
 					responseCheckItems = http.request(reqCheckItems) # Net::HTTPResponse object
@@ -253,8 +253,8 @@ fileJson['cards'].each do |card|
 							:idCheckList       	=>  checklistId,
 							:idCheckItem				=>  itemId,
 							:value							=>	item['completed'],
-							:key        				=>  @key,
-							:token   						=>  @token
+							:key        				=>  $key,
+							:token   						=>  $token
 					)
 					
 					reply = RestClient.put(
@@ -262,8 +262,8 @@ fileJson['cards'].each do |card|
 							:idCheckList       	=>  checklistId,
 							:idCheckItem				=>  itemId,
 							:value							=>	item['pos'],
-							:key        				=>  @key,
-							:token   						=>  @token
+							:key        				=>  $key,
+							:token   						=>  $token
 					)
 					
 					puts "\t\tItem \""+thisItem['name']+"\" ("+thisItem['id']+") with completed=\""+item['completed'].to_s+"\" added!" 
@@ -280,8 +280,8 @@ fileJson['cards'].each do |card|
 		uriLabel = URI('https://api.trello.com/1/cards/'+hashCards[card['id']]+'/labels')
 		reqLabel = Net::HTTP::Post.new(uriLabel.path)
 		reqLabel.set_form_data('value' => label['color'],
-											'key'=>@key,
-											'token'=>@token)
+											'key'=>$key,
+											'token'=>$token)
 		Net::HTTP.start(uriLabel.host, uriLabel.port, :use_ssl => uriLabel.scheme == 'https') do |http|
 			responseLabel = http.request(reqLabel)
 			puts "\tLabel \""+label['color']+"\" added!"				
@@ -301,8 +301,8 @@ fileJson['cards'].each do |card|
 			uriComments = URI('https://api.trello.com/1/cards/'+hashCards[card['id']]+'/actions/comments')
 			reqComments = Net::HTTP::Post.new(uriComments.path)
 			reqComments.set_form_data('text' => commentText,
-												'key'=>@key,
-												'token'=>@token)
+												'key'=>$key,
+												'token'=>$token)
 			
 			Net::HTTP.start(uriComments.host, uriComments.port, :use_ssl => uriComments.scheme == 'https') do |http|
 				responseComments = http.request(reqComments)	
@@ -333,8 +333,8 @@ fileJson['cards'].each do |card|
 						'https://api.trello.com/1/cards/'+hashCards[card['id']]+'/attachments',
 						:file       =>  attachmentFile,
 						:name				=>  attachment['name'], # has no effect
-						:key        =>  @key,
-						:token   		=>  @token
+						:key        =>  $key,
+						:token   		=>  $token
 				)
 				File.delete(attachmentFile) 
 				puts "\tAttachment \""+File.basename(attachment['url'])+"\" added!"
@@ -348,8 +348,8 @@ fileJson['cards'].each do |card|
 		reply = RestClient.put(
 				'https://api.trello.com/1/cards/'+hashCards[card['id']]+'/due',
 				:value       =>  card['due'],
-				:key        =>  @key,
-				:token   		=>  @token
+				:key        =>  $key,
+				:token   		=>  $token
 		)
 		puts "\tDue Date \""+card['due'].to_s+"\" added!"	
 	end
@@ -361,12 +361,12 @@ fileJson['cards'].each do |card|
 		members = card['membersVoted']
 		
 		members.each do |member|
-			if isThisMe(member, @key, @token) == true
+			if isThisMe(member) == true
 				reply = RestClient.post(
 						'https://api.trello.com/1/cards/'+hashCards[card['id']]+'/membersVoted',
 						:value   => member,
-						:key     => @key,
-						:token   => @token
+						:key     => $key,
+						:token   => $token
 				)
 				puts "\tMember \""+member+"\" voted!"
 			end
@@ -379,8 +379,8 @@ fileJson['cards'].each do |card|
 		reply = RestClient.put(
 				'https://api.trello.com/1/cards/'+hashCards[card['id']]+'/subscribed',
 				:value   => true,
-				:key     => @key,
-				:token   => @token
+				:key     => $key,
+				:token   => $token
 		)
 	end
 	# end import subscribers

@@ -13,19 +13,19 @@ require './classes/CLbackup.rb'
 
 options = CLbackup.parse(ARGV)
 
-@key = options.key.first
-@token = options.token.first
+$key = options.key.first
+$token = options.token.first
 
 # debug
 #Juurotest
-#@key = '8c23c5c0c933680a5e155668654c40e6'
-#@token = 'b4f1db7377c62ce9b02a4a266c2fdb8fdb53223ace32732bcd48a0492ddc747d'
+#$key = '8c23c5c0c933680a5e155668654c40e6'
+#$token = 'b4f1db7377c62ce9b02a4a266c2fdb8fdb53223ace32732bcd48a0492ddc747d'
 
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
-#@key = 'PUT YOUR KEY HERE'
-#@token = 'PUT YOUR TOKEN HERE'
+#$key = 'PUT YOUR KEY HERE'
+#$token = 'PUT YOUR TOKEN HERE'
 
-boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
 #parse JSON
 dataBoards = JSON.parse(boards)
 
@@ -36,7 +36,7 @@ arrayLists = Array.new
 arrayCards = Array.new
 dataBoards.each do |board|
 	
-	members = open("https://api.trello.com/1/boards/"+board['id']+"/members?&key="+@key+"&token="+@token+"").read
+	members = open("https://api.trello.com/1/boards/"+board['id']+"/members?&key="+$key+"&token="+$token+"").read
 	dataMembers = JSON.parse(members)
 	
 	arrayMembers = Array.new
@@ -55,17 +55,17 @@ dataBoards.each do |board|
 	hashMembers = nil
 	arrayMembers = nil	
 	
-	lists = open("https://api.trello.com/1/boards/"+board['id']+"/lists?&key="+@key+"&token="+@token+"").read
+	lists = open("https://api.trello.com/1/boards/"+board['id']+"/lists?&key="+$key+"&token="+$token+"").read
 	dataLists = JSON.parse(lists)
 	
 	dataLists.each do |list|
 		arrayLists.push(list)
 	end	
 	
-	cards = open("https://api.trello.com/1/boards/"+board['id']+"/cards?&key="+@key+"&token="+@token+"").read
+	cards = open("https://api.trello.com/1/boards/"+board['id']+"/cards?&key="+$key+"&token="+$token+"").read
 	dataCards = JSON.parse(cards)
 	
-	arrayCards = arrayCards + getCardsAsArray(dataCards, @key, @token)
+	arrayCards = arrayCards + getCardsAsArray(dataCards)
 		
 end
 

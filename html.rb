@@ -12,43 +12,43 @@ require './classes/CLhtml.rb'
 
 options = CLHtml.parse(ARGV)
 
-@key = options.key.first
-@token = options.token.first
+$key = options.key.first
+$token = options.token.first
 
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
-# @key = 'PUT YOUR KEY HERE'
-# @token = 'PUT YOUR TOKEN HERE'
+# $key = 'PUT YOUR KEY HERE'
+# $token = 'PUT YOUR TOKEN HERE'
 
 cardsToImport = Array.new
 @htmlTitle = String.new
 
 if !options.lists.nil?
   options.lists.each do |listId|
-    cardByList = getCardsByList(listId, @key, @token)
+    cardByList = getCardsByList(listId)
     cardsToImport = cardsToImport|cardByList
   end
 end
 
 if !options.boards.nil?
   options.boards.each do |boardId|
-    cardsByBoard = getCardsByBoard(boardId, @key, @token)
+    cardsByBoard = getCardsByBoard(boardId)
     cardsToImport = cardsToImport|cardsByBoard
   end
 end
 
 if !options.cards.nil?
   options.cards.each do |cardId|
-    cardsByCard = getSingleCard(cardId, @key, @token)
+    cardsByCard = getSingleCard(cardId)
     cardsToImport.push(cardsByCard)
   end
 end
 
 if options.all == true
-  boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+  boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
   boards = JSON.parse(boards)
 
   boards.each do |board|
-    cardsByBoard = getCardsByBoard(board['id'], @key, @token)
+    cardsByBoard = getCardsByBoard(board['id'])
     cardsToImport = cardsToImport|cardsByBoard
   end
 end
@@ -57,7 +57,7 @@ if !options.title.empty?
   @htmlTitle = options.title.first
 end
 
-cardsFull = getCardsAsArray(cardsToImport, @key, @token, false)
+cardsFull = getCardsAsArray(cardsToImport, false)
 
 # Load template.
 templateFile = File.open("templateHtml.html.erb", "rb")

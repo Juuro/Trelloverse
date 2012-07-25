@@ -10,53 +10,56 @@ require 'open-uri'
 require './functions.rb'
 require './classes/CLgcal.rb'
 
+
 options = CLcalendar.parse(ARGV)
 
-@key = options.key.first
-@token = options.token.first
+$key = options.key.first
+$token = options.token.first
+
+puts "Member: "+getMember('me')['username']
 
 # debug
-#@key = '0ccb4b07c006c5d5555a55b64a124c89'
-#@token = 'e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba'
+#$key = '0ccb4b07c006c5d5555a55b64a124c89'
+#$token = 'e9fe54ca188979634e2115c4862de38be500cd0d46c95b8a561e693d240268ba'
 
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
-#@key = 'PUT YOUR KEY HERE'
-#@token = 'PUT YOUR TOKEN HERE'
+#$key = 'PUT YOUR KEY HERE'
+#$token = 'PUT YOUR TOKEN HERE'
 
 cardsToImport = Array.new
 
 if !options.lists.nil?
 	options.lists.each do |listId|
-		cardsByList = getCardsByList(listId, @key, @token)
+		cardsByList = getCardsByList(listId)
 		cardsToImport = cardsToImport|cardsByList
 	end
 end
 
 if !options.boards.nil?
 	options.boards.each do |boardId|
-		cardsByBoard = getCardsByBoard(boardId, @key, @token)
+		cardsByBoard = getCardsByBoard(boardId)
 		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
 
 if !options.cards.nil?
 	options.cards.each do |cardId|
-		cardsByCard = getSingleCard(cardId, @key, @token)
+		cardsByCard = getSingleCard(cardId)
 		cardsToImport.push(cardsByCard)
 	end
 end
 
 if options.all == true
-	boards = open("https://api.trello.com/1/members/me/boards?key="+@key+"&token="+@token+"&filter=open").read
+	boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
 	boards = JSON.parse(boards)
 
 	boards.each do |board|
-		cardsByBoard = getCardsByBoard(board['id'], @key, @token)
+		cardsByBoard = getCardsByBoard(board['id'])
 		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
 
-#cardsFull = getCardsAsArray(cardsToImport, @key, @token, false)
+#cardsFull = getCardsAsArray(cardsToImport, $key, $token, false)
 
 
 

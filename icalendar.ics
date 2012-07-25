@@ -19,15 +19,16 @@ ATTENDEE:juuro@me.com
 ATTENDEE:bla@blu.de
 CATEGORIES:FAMILY
 DESCRIPTION:4ffa4c76e75c29032a88ed19
-DTEND;TZID=Europe/Berlin:20120725
-DTSTAMP:20120725T034430
-DTSTART;TZID=Europe/Berlin:20120725
-LOCATION:https://trello.com/card/ob-la-di-ob-la-da/4ffa4c5ce75c29032a88ea31
- /2
+DTEND;TZID=Europe/Berlin:20120726
+DTSTAMP:20120725T155325
+DTSTART;TZID=Europe/Berlin:20120726
+LOCATION:https://trello.com/card/ob-la-di-ob-la-daaaaa/4ffa4c5ce75c29032a88
+ ea31/2
 SEQUENCE:1
-SUMMARY:Ob-La-Di\, Ob-La-Da
+SUMMARY:Ob-La-Di\, Ob-La-DaAAAA
 TRANSP:TRANSPARENT
-UID:2012-07-25T03:44:30+02:00_849447035@noname
-URL:https://trello.com/card/ob-la-di-ob-la-da/4ffa4c5ce75c29032a88ea31/2
+UID:2012-07-25T15:53:25+02:00_779316801@eap107042.extern.uni-tuebingen.de
+URL:https://trello.com/card/ob-la-di-ob-la-daaaaa/4ffa4c5ce75c29032a88ea31/
+ 2
 END:VEVENT
 END:VCALENDAR
