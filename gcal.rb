@@ -89,8 +89,8 @@ cardsToImport.each do |card|
 			if events.empty?
 				event = {
 					'summary' => card['name'],
-					'description' => card['id'],
-					'location' => card['url'],
+					'description' => card['desc'],
+					'location' => card['id'],
 					'start' => {
 						'dateTime' => card['due'],
 						'timeZone' => 'Europe/Berlin'
@@ -115,8 +115,8 @@ cardsToImport.each do |card|
 																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id})
 						event = {
 							'summary' => card['name'],
-							'description' => card['id'],
-							'location' => card['url'],
+							'description' => card['desc'],
+							'location' => card['id'],
 							'start' => {
 								'dateTime' => card['due'],
 								'timeZone' => 'Europe/Berlin'
