@@ -15,6 +15,14 @@ options = CLbackup.parse(ARGV)
 
 $key = options.key.first
 $token = options.token.first
+@filename = options.name.first
+
+puts "Member: "+getMember('me')['username']
+
+if @filename.nil?
+	pp "You have to specify a filename for the backup file!"
+	abort
+end
 
 # debug
 #Juurotest
@@ -80,7 +88,7 @@ backupFile.puts JSON.generate(hashBackup)
 backupFile.close()
 pp "Done!"
 
-Zippy.create 'backup.zip' do |zip|
+Zippy.create @filename do |zip|
 	zip['backup.json'] = File.open(backupFile)
 
 	Dir.entries(directoryNameAttachments).each do |file|

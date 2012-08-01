@@ -21,6 +21,7 @@ class CLbackup
     options.title = []
     options.key = []
     options.token = []
+    options.name = []
     options.all = false
     options.encoding = "utf8"
     
@@ -51,6 +52,10 @@ class CLbackup
         options.cards = cards
       end
 =end
+      # Filename
+      opts.on("-n MANDATORY, --name", "The filename of the backup file.") do |name|
+        options.name << name
+      end
 
       # Trello key
       opts.on("-k MANDATORY, --key", "Your Trello key.") do |key|

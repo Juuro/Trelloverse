@@ -15,6 +15,8 @@ options = CLHtml.parse(ARGV)
 $key = options.key.first
 $token = options.token.first
 
+puts "Member: "+getMember('me')['username']
+
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
 # $key = 'PUT YOUR KEY HERE'
 # $token = 'PUT YOUR TOKEN HERE'
