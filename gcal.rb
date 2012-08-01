@@ -133,6 +133,29 @@ cardsToImport.each do |card|
 																		:headers => {'Content-Type' => 'application/json'})
 						
 						puts "\""+card['name']+"\" ("+card['id']+") event changed!"
+					elsif (e.description != card['desc'])
+						result = client.execute(:api_method => service.events.delete,
+																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id})
+						event = {
+							'summary' => card['name'],
+							'description' => card['desc'],
+							'location' => card['id'],
+							'start' => {
+								'dateTime' => card['due'],
+								'timeZone' => 'Europe/Berlin'
+							},
+							'end' => {
+								'dateTime' => card['due'],
+								'timeZone' => 'Europe/Berlin'
+							}
+						}		
+						
+						insertevent = client.execute(:api_method => service.events.insert,
+																		:parameters => {'calendarId' => 'primary'},
+																		:body => JSON.dump(event),
+																		:headers => {'Content-Type' => 'application/json'})
+						
+						puts "\""+card['name']+"\" ("+card['id']+") event changed!"
 					else
 						#puts "\""+card['name']+"\" ("+card['id']+") event not changed!"
 					end					
