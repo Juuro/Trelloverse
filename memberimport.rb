@@ -16,8 +16,19 @@ options = CLbackup.parse(ARGV)
 
 $key = options.key.first
 $token = options.token.first
+@filename = options.name.first
 
 puts "Member: "+getMember('me')['username']
+
+if @filename.nil?
+  puts "ERROR: You have to specify a filename of the backup file!"
+  abort
+else
+  if `file -Ib #{@filename}`.gsub(/;.*\n/, "") != "application/zip"
+    puts "ERROR: The backup file has to be a ZIP file!"
+    abort
+  end
+end
 
 # debug
 #$key = '897f1e4573b21a4c8ad8a5cbb4bb3441'

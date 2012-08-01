@@ -21,8 +21,13 @@ $token = options.token.first
 puts "Member: "+getMember('me')['username']
 
 if @filename.nil?
-	pp "You have to specify a filename of the backup file!"
+	puts "ERROR: You have to specify a filename of the backup file!"
 	abort
+else
+	if `file -Ib #{@filename}`.gsub(/;.*\n/, "") != "application/zip"
+		puts "ERROR: The backup file has to be a ZIP file!"
+		abort
+	end
 end
 
 # debug
