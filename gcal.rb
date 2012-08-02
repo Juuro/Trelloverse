@@ -111,8 +111,7 @@ cardsToImport.each do |card|
 				events.each do |e|
 					#check if this card has changedBackup
 					if (e.start.dateTime - (2*60*60)).strftime("%Y-%m-%dT%H:%M:00.000Z") != card['due'] || (e.end.dateTime - (2*60*60)).strftime("%Y-%m-%dT%H:%M:00.000Z") != card['due'] || e.summary != card['name']
-						result = client.execute(:api_method => service.events.delete,
-																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id})
+						
 						event = {
 							'summary' => card['name'],
 							'description' => card['desc'],
@@ -127,15 +126,14 @@ cardsToImport.each do |card|
 							}
 						}		
 						
-						insertevent = client.execute(:api_method => service.events.insert,
-																		:parameters => {'calendarId' => 'primary'},
+						insertevent = client.execute(:api_method => service.events.update,
+																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id},
 																		:body => JSON.dump(event),
 																		:headers => {'Content-Type' => 'application/json'})
 						
 						puts "\""+card['name']+"\" ("+card['id']+") event changed!"
 					elsif (e.description != card['desc'])
-						result = client.execute(:api_method => service.events.delete,
-																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id})
+						
 						event = {
 							'summary' => card['name'],
 							'description' => card['desc'],
@@ -150,8 +148,8 @@ cardsToImport.each do |card|
 							}
 						}		
 						
-						insertevent = client.execute(:api_method => service.events.insert,
-																		:parameters => {'calendarId' => 'primary'},
+						insertevent = client.execute(:api_method => service.events.update,
+																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id},
 																		:body => JSON.dump(event),
 																		:headers => {'Content-Type' => 'application/json'})
 						
