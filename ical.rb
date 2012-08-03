@@ -78,24 +78,25 @@ cal.timezone do
 end
 	
 cardsFull.each do |card|
-
 	if card['due'] != nil	
+		
+		pp getDate(card['due'], 'ical')
 		
 		cat = ["FAMILY"]
 		
 		# Create an event
 		cal.event do
-			dtstart       Date.parse(card['due'])
-			dtend         Date.parse(card['due'])
+			dtstart       getDate(card['due'], 'ical')
+			dtend         getDate(card['due'], 'ical')
 			summary     	card['name']
 			description 	card['id']
-			location 			card['url']
+			#location 			card['url']
 			#klass       "PUBLIC"
 			transp				"TRANSPARENT"
 			categories		cat
 			sequence			1
 			#organizer			%w(CN=John Doe:MAILTO:john.doe@example.com)			
-			attendees     %w(mail@sebastian-engel.de juuro@me.com bla@blu.de)
+			#attendees     %w(mail@sebastian-engel.de juuro@me.com bla@blu.de)
 			url						card['url']
 		end		
 	end

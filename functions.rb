@@ -16,6 +16,8 @@ def getDate(date, format='de')
 		return formattedDate.strftime('%m/%d/%Y %I.%M.%S %P')
 	elsif format=='joomla'
 		return formattedDate.strftime('%Y-%m-%d %H:%M:%S')
+	elsif format=='ical'
+		return formattedDate.strftime('%Y%m%dT%H%M%S')
 	else
 		return formattedDate
 	end
