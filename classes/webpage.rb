@@ -1,4 +1,4 @@
-class List
+class Webpage
   def initialize( title )
     @title = title
 
@@ -13,6 +13,4 @@ class List
   def get_binding
     binding
   end
-
-  # ...
 end

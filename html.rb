@@ -2,7 +2,7 @@
 #Encoding: UTF-8
 
 require "erb"
-require "./classes/list.rb"
+require "./classes/webpage.rb"
 require 'json'
 require 'open-uri'
 require 'pp'
@@ -64,19 +64,19 @@ cardsFull = getCardsAsArray(cardsToImport, false)
 # Load template.
 templateFile = File.open("templateHtml.html.erb", "rb")
 template = templateFile.read
-template.gsub(/^  /, '')
+#template.gsub(/^  /, '')
 
 rhtml = ERB.new(template)
 
 # Set up template data.
-list = List.new( @htmlTitle )
+webpage = Webpage.new( @htmlTitle )
 
 cardsFull.each do |card|
-  list.add_card(card)
+  webpage.add_card(card)
 end
 
 # Produce result.
-html = rhtml.result(list.get_binding)
+html = rhtml.result(webpage.get_binding)
 
 fileHtml = File.new("index.html", "w+")
 fileHtml.puts html

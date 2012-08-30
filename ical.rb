@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 #Encoding: UTF-8
 
-require 'rubygems'
+#require 'rubygems'
 require 'icalendar'
 require 'date'
 require 'pp'
@@ -71,18 +71,18 @@ cal.timezone do
 	standard do
 		timezone_offset_from  "+0200"
 		timezone_offset_to    "+0100"
-		timezone_name         "GMT+01:00"
-		dtstart               "20060811T073001"
-		add_recurrence_rule   "FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU"
+		timezone_name         "UTC+01:00"
+		dtstart               "19960811T073001"
+		add_recurrence_rule   "FREQ=DAILY;INTERVAL=2"
 	end
 end
+
+
+
+cat = ["FAMILY"]
 	
 cardsFull.each do |card|
 	if card['due'] != nil	
-		
-		pp getDate(card['due'], 'ical')
-		
-		cat = ["FAMILY"]
 		
 		# Create an event
 		cal.event do
@@ -93,8 +93,8 @@ cardsFull.each do |card|
 			#location 			card['url']
 			#klass       "PUBLIC"
 			transp				"TRANSPARENT"
-			categories		cat
-			sequence			1
+			categories		["FAMILY"]
+			sequence			0
 			#organizer			%w(CN=John Doe:MAILTO:john.doe@example.com)			
 			#attendees     %w(mail@sebastian-engel.de juuro@me.com bla@blu.de)
 			url						card['url']

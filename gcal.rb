@@ -76,6 +76,27 @@ client.authorization.access_token = result['access_token']
 
 service = client.discovered_api('calendar', 'v3')
 
+# delete events from Google if they're not submitted anymore
+getallevents = client.execute(:api_method => service.events.list,
+															:parameters => {'calendarId' => 'primary', 'location' => '*'})
+															
+while true
+	allevents = getallevents.data.items
+	
+	allevents.each do |e|		
+		
+		if cardsToImport.include?(e.location)
+			pp e.location
+		end
+			
+	end
+	
+	if !(page_token = getallevents.data.next_page_token)
+		break
+	end
+	getallevents = getallevents = client.execute(:api_method => service.events.list,
+																	 :parameters => {'calendarId' => 'primary', 'pageToken' => page_token})
+end	
 
 
 cardsToImport.each do |card|
@@ -92,71 +113,75 @@ cardsToImport.each do |card|
 					'description' => card['desc'],
 					'location' => card['id'],
 					'start' => {
-						'dateTime' => card['due'],
+						'dateTime' => getDate(card['due'], format='iso8601'),
 						'timeZone' => 'Europe/Berlin'
 					},
 					'end' => {
-						'dateTime' => card['due'],
+						'dateTime' => getDate(card['due'], format='iso8601'),
 						'timeZone' => 'Europe/Berlin'
 					}
 				}		
 				
+				
 				insertevent = client.execute(:api_method => service.events.insert,
 																:parameters => {'calendarId' => 'primary'},
-																:body => JSON.dump(event),
+																:body => JSON.generate(event),
 																:headers => {'Content-Type' => 'application/json'})
 
 				puts "\""+card['name']+"\" ("+card['id']+") event created!"
 			else
 				events.each do |e|
-					#check if this card has changedBackup
-					if (e.start.dateTime - (2*60*60)).strftime("%Y-%m-%dT%H:%M:00.000Z") != card['due'] || (e.end.dateTime - (2*60*60)).strftime("%Y-%m-%dT%H:%M:00.000Z") != card['due'] || e.summary != card['name']
-						
-						event = {
-							'summary' => card['name'],
-							'description' => card['desc'],
-							'location' => card['id'],
-							'start' => {
-								'dateTime' => card['due'],
-								'timeZone' => 'Europe/Berlin'
-							},
-							'end' => {
-								'dateTime' => card['due'],
-								'timeZone' => 'Europe/Berlin'
-							}
-						}		
-						
-						insertevent = client.execute(:api_method => service.events.update,
-																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id},
-																		:body => JSON.dump(event),
-																		:headers => {'Content-Type' => 'application/json'})
-						
-						puts "\""+card['name']+"\" ("+card['id']+") event changed!"
-					elsif (e.description != card['desc'])
-						
-						event = {
-							'summary' => card['name'],
-							'description' => card['desc'],
-							'location' => card['id'],
-							'start' => {
-								'dateTime' => card['due'],
-								'timeZone' => 'Europe/Berlin'
-							},
-							'end' => {
-								'dateTime' => card['due'],
-								'timeZone' => 'Europe/Berlin'
-							}
-						}		
-						
-						insertevent = client.execute(:api_method => service.events.update,
-																		:parameters => {'calendarId' => 'primary', 'eventId' => e.id},
-																		:body => JSON.dump(event),
-																		:headers => {'Content-Type' => 'application/json'})
-						
-						puts "\""+card['name']+"\" ("+card['id']+") event changed!"
-					else
-						#puts "\""+card['name']+"\" ("+card['id']+") event not changed!"
-					end					
+					
+					#check if this card has changed
+					if e.location == card['id']
+						if (e.start.dateTime - (2*60*60)).strftime("%Y-%m-%dT%H:%M:00.000Z") != card['due'] || (e.end.dateTime - (2*60*60)).strftime("%Y-%m-%dT%H:%M:00.000Z") != card['due'] || e.summary != card['name']
+							
+							event = {
+								'summary' => card['name'],
+								'description' => card['desc'],
+								'location' => card['id'],
+								'start' => {
+									'dateTime' => getDate(card['due'], format='iso8601'),
+									'timeZone' => 'Europe/Berlin'
+								},
+								'end' => {
+									'dateTime' => getDate(card['due'], format='iso8601'),
+									'timeZone' => 'Europe/Berlin'
+								}
+							}		
+							
+							updateevent = client.execute(:api_method => service.events.update,
+																			:parameters => {'calendarId' => 'primary', 'eventId' => e.id},
+																			:body => JSON.dump(event),
+																			:headers => {'Content-Type' => 'application/json'})
+							
+							puts "\""+card['name']+"\" ("+card['id']+") event changed!"
+						elsif (e.description != card['desc'])
+							
+							event = {
+								'summary' => card['name'],
+								'description' => card['desc'],
+								'location' => card['id'],
+								'start' => {
+									'dateTime' => getDate(card['due'], format='iso8601'),
+									'timeZone' => 'Europe/Berlin'
+								},
+								'end' => {
+									'dateTime' => getDate(card['due'], format='iso8601'),
+									'timeZone' => 'Europe/Berlin'
+								}
+							}		
+							
+							updateevent = client.execute(:api_method => service.events.update,
+																			:parameters => {'calendarId' => 'primary', 'eventId' => e.id},
+																			:body => JSON.dump(event),
+																			:headers => {'Content-Type' => 'application/json'})
+							
+							puts "\""+card['name']+"\" ("+card['id']+") event changed!"
+						else
+							#puts "\""+card['name']+"\" ("+card['id']+") event not changed!"
+						end	
+					end				
 				end
 			end
 			

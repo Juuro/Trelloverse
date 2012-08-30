@@ -2,7 +2,6 @@
 #Encoding: UTF-8
 
 require 'optparse'
-require 'optparse/time'
 require 'ostruct'
 require 'pp'
 

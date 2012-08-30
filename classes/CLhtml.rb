@@ -2,7 +2,6 @@
 #Encoding: UTF-8
 
 require 'optparse'
-require 'optparse/time'
 require 'ostruct'
 require 'pp'
 
@@ -36,17 +35,17 @@ class CLHtml
       end
       
       # Trello list(s)
-      opts.on("-l", "--lists x,y,z", Array, "Ids of one or more Trello lists.") do |lists|
+      opts.on("-l x,y,z", "--lists x,y,z", Array, "Ids of one or more Trello lists.") do |lists|
         options.lists = lists
       end
 
       # Trello board(s)
-      opts.on("-b", "--boards x,y,z", Array, "Ids of one or more Trello boards.") do |boards|
+      opts.on("-b x,y,z", "--boards x,y,z", Array, "Ids of one or more Trello boards.") do |boards|
         options.boards = boards
       end
       
       # Trello card(s)
-      opts.on("-c", "--cards x,y,z", Array, "Ids of one or more Trello cards.") do |cards|
+      opts.on("-c x,y,z", "--cards x,y,z", Array, "Ids of one or more Trello cards.") do |cards|
         options.cards = cards
       end
       

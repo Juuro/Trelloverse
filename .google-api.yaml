@@ -5,3 +5,6 @@ client_id: 866752766650.apps.googleusercontent.com
 client_secret: arLSDNQqkudI-hoI554ZQbj2
 access_token: ya29.AHES6ZRrlyLgXwWGhdYzwl1Wmgwa5DLGJh4ud9aoUMNwnv5q5-2Q5Q
 refresh_token: 1/jHMBJZu-Km53p3C09aUSUfBNifFj-LMVfIrRwaG708c
+
+
+https://accounts.google.com/o/oauth2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar&redirect_uri=https%3A%2F%2Foauth2-login-demo.appspot.com%2Fcode&response_type=code&client_id=812741506391.apps.googleusercontent.com&access_type=offline

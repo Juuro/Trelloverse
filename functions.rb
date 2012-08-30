@@ -4,50 +4,54 @@
 require 'mysql'
 require 'pp'
 require 'rest_client'
+require 'time'
+require 'kramdown'
 
 def getDate(date, format='de')
-	# ISO-8601 to German/US date
-	formattedDate = Time.new
-	formattedDate = Time.iso8601(date)
+	
+	#fdate = Time.new
+	fdate = Time.iso8601(date).getlocal
 	
 	if format=='de'
-		return formattedDate.strftime('%d.%m.%Y %H:%M:%S')
+		return fdate.strftime('%d.%m.%Y %H:%M:%S')
 	elsif format=='us'
-		return formattedDate.strftime('%m/%d/%Y %I.%M.%S %P')
+		return fdate.strftime('%m/%d/%Y %I.%M.%S %P')
 	elsif format=='joomla'
-		return formattedDate.strftime('%Y-%m-%d %H:%M:%S')
+		return fdate.strftime('%Y-%m-%d %H:%M:%S')
 	elsif format=='ical'
-		return formattedDate.strftime('%Y%m%dT%H%M%S')
-	else
-		return formattedDate
+		return fdate.strftime('%Y%m%dT%H%M%S')
+	elsif format=='year'
+		return fdate.strftime('%Y')
+	elsif format=='iso8601'
+		return fdate.iso8601
 	end
 end
 
 def getChecklist(cardId)
-	checklists = open("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+$key+"&token="+$token).read
+	checklists = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+$key+"&token="+$token)
 	data = JSON.parse(checklists)
 
 	return data  
 end
 
 def getAttachment(cardId)
-	attachments = open("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+$key+"&token="+$token).read
+	attachments = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+$key+"&token="+$token)
 	data = JSON.parse(attachments)
 
 	return data
 end
 
 def getLists(idBoard)
-	list = open("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+$key+"&token="+$token).read
+	list = RestClient.get("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+$key+"&token="+$token)
 end
 
 def getList(listId)
-	list = open("https://api.trello.com/1/lists/"+listId+"?key="+$key+"&token="+$token).read
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"?key="+$key+"&token="+$token)
 	list = JSON.parse(list)	
 end
 
 def isCompleted(cardId, itemId)
-	completedItems = open("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+$key+"&token="+$token).read
+	completedItems = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+$key+"&token="+$token)
 	completedItems = JSON.parse(completedItems)
 
 	completedItems.each do |item|
@@ -60,7 +64,7 @@ def isCompleted(cardId, itemId)
 end
 
 def getMember(memberId)
-	member = open("https://api.trello.com/1/members/"+memberId+"?key="+$key+"&token="+$token+"&filter=open").read
+	member = RestClient.get("https://api.trello.com/1/members/"+memberId+"?key="+$key+"&token="+$token+"&filter=open")
 	member = JSON.parse(member)
 end
 
@@ -73,43 +77,39 @@ def isThisMe(memberId)
 end
 
 def getCardActions(cardId)
-	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?key="+$key+"&token="+$token).read
+	actions = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?key="+$key+"&token="+$token)
 	actions = JSON.parse(actions)
 end
 
 def getCardComments(cardId)
-	actions = open("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+$key+"&token="+$token).read
+	actions = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+$key+"&token="+$token)
 	actions = JSON.parse(actions)
 end
 
 def cardUpdated(cardId)
-	reply = RestClient.get(
-			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+$key+'&token='+$token
-	)
+	reply = RestClient.get('https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+$key+'&token='+$token)
 
 	updates = JSON.parse(reply.body)
 end
 
 def cardCreated(cardId)
-	reply = RestClient.get(
-			'https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+$key+'&token='+$token
-	)
+	reply = RestClient.get('https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+$key+'&token='+$token)
 
 	updates = JSON.parse(reply.body)
 end
 
 def getSingleCard(cardId)
-	card = open("https://api.trello.com/1/cards/"+cardId+"?key="+$key+"&token="+$token).read
+	card = RestClient.get("https://api.trello.com/1/cards/"+cardId+"?key="+$key+"&token="+$token)
 	card = JSON.parse(card)
 end
 
 def getCardsByBoard(boardId)
-	board = open("https://api.trello.com/1/boards/"+boardId+"/cards?key="+$key+"&token="+$token+"&filter=open").read
+	board = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/cards?key="+$key+"&token="+$token+"&filter=open")
 	board = JSON.parse(board)
 end
 
 def getCardsByList(listId)
-	list = open("https://api.trello.com/1/lists/"+listId+"/cards?key="+$key+"&token="+$token+"&filter=open").read
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"/cards?key="+$key+"&token="+$token+"&filter=open")
 	list = JSON.parse(list)
 end
 
@@ -332,7 +332,39 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 end
 
 
-def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
+def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
+	
+	card = getSingleCard(cardId)
+	title = card['name']
+	description = card['desc']
+	
+	description = Kramdown::Document.new(description).to_html
+	
+	created = nil
+	if !cardUpdated(cardId).empty?
+		created = getDate(cardUpdated(cardId).first['date'], 'joomla')
+	else
+		created = getDate(cardCreated(cardId).first['date'], 'joomla')
+	end
+	
+	hasAttachment = getAttachment(cardId) 
+	attachments = Hash.new 
+	if hasAttachment[0] != nil
+		c = 0
+		hasAttachment.each do |attachment|
+	
+			url = attachment['url']
+			attachment['name']
+	
+			attHash = Hash.new
+			attHash['url'] = url
+			attHash['name'] = attachment['name']
+	
+			attachments[c] = attHash
+	
+			c += 1
+		end	
+	end
 	
 	# attachments
 	if attachments != nil
@@ -493,7 +525,7 @@ def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description
 				)
 			")
 			stmt.execute
-			pp cardId+': New article!'
+			pp 'New article: '+cardId+" : "+title
 		else
 			# this should be only one because per Trello card id should only exist one article in Joomla
 			existingArticleQuery.each do |thisArticle|				
@@ -523,9 +555,9 @@ def trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description
 							metadata = '"+cardId+"'
 					")
 					stmt.execute
-					pp cardId+': Changed!'
+					pp 'Changed: '+cardId+" : "+title
 				else 
-					pp cardId+': Nothing changed.'
+					pp 'Nothing changed: '+cardId+" : "+title
 				end
 				
 				#exit
@@ -539,6 +571,8 @@ end
 
 
 def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
+	
+	description = Kramdown::Document.new(description).to_html
 
 	# attachments
 	if attachments != nil

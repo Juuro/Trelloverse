@@ -17,13 +17,6 @@ $key = options.key.first
 $token = options.token.first
 @filename = options.name.first
 
-puts "Member: "+getMember('me')['username']
-
-if @filename.nil?
-	pp "You have to specify a filename for the backup file!"
-	abort
-end
-
 # debug
 #Juurotest
 #$key = '8c23c5c0c933680a5e155668654c40e6'
@@ -32,6 +25,13 @@ end
 # In case you want to put you key and token in the file uncomment the following lines and enter your data1.
 #$key = 'PUT YOUR KEY HERE'
 #$token = 'PUT YOUR TOKEN HERE'
+
+puts "Member: "+getMember('me')['username']
+
+if @filename.nil?
+	pp "You have to specify a filename for the backup file!"
+	abort
+end
 
 boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
 #parse JSON

@@ -2,9 +2,8 @@
 #Encoding: UTF-8
 
 require 'json'
-require 'open-uri'
+require 'rest_client'
 require 'pp'
-require 'kramdown'
 require './functions.rb'
 require './classes/CLJoomlaMultiple.rb'
 
@@ -47,7 +46,7 @@ if !options.cards.nil?
 end
 
 if options.all == true
-	boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
+	boards = RestClient.get("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open")
 	boards = JSON.parse(boards)
 
 	boards.each do |board|
@@ -59,48 +58,6 @@ end
 sectionid = options.section.first
 catid = options.category.first
 
-cardsToImport.each do |card|	
-
-	title = card['name']
-	card['desc'] = Kramdown::Document.new(card['desc'])
-	description =  card['desc'].to_html
-	cardId = card['id']
-	
-	created = nil
-	if !cardUpdated(card['id']).empty?
-		created = getDate(cardUpdated(card['id']).first['date'], 'joomla')
-	else
-		created = getDate(cardCreated(card['id']).first['date'], 'joomla')
-	end
-
-	#attachment
-	hasAttachment = getAttachment(card['id']) 
-	attachments = Hash.new 
-	if hasAttachment[0] != nil
-		c = 0
-		for attachment in hasAttachment do
-
-			url = attachment['url']
-			attachment['name']
-
-			attHash = Hash.new
-			attHash['url'] = url
-			attHash['name'] = attachment['name']
-
-			attachments[c] = attHash
-
-			c += 1
-		end		
-
-	end
-	#end attachment
-
-	if attHash != nil	
-		trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description, attachments)
-	else
-		trelloToJoomlaMultiple(title, created, cardId, sectionid, catid, description)
-	end
-
-	attHash = nil
-
+cardsToImport.each do |card|
+	trelloToJoomlaMultiple(card['id'], sectionid, catid)
 end
