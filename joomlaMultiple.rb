@@ -59,5 +59,5 @@ sectionid = options.section.first
 catid = options.category.first
 
 cardsToImport.each do |card|
-	trelloToJoomlaMultiple(card['id'], sectionid, catid)
+	trelloJoomlaSync(card['id'], sectionid, catid, 1.5)
 end

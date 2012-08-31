@@ -7,6 +7,8 @@ require 'rest_client'
 require 'time'
 require 'kramdown'
 
+### Date
+
 def getDate(date, format='de')
 	
 	#fdate = Time.new
@@ -27,41 +29,8 @@ def getDate(date, format='de')
 	end
 end
 
-def getChecklist(cardId)
-	checklists = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+$key+"&token="+$token)
-	data = JSON.parse(checklists)
 
-	return data  
-end
-
-def getAttachment(cardId)
-	attachments = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+$key+"&token="+$token)
-	data = JSON.parse(attachments)
-
-	return data
-end
-
-def getLists(idBoard)
-	list = RestClient.get("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+$key+"&token="+$token)
-end
-
-def getList(listId)
-	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"?key="+$key+"&token="+$token)
-	list = JSON.parse(list)	
-end
-
-def isCompleted(cardId, itemId)
-	completedItems = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+$key+"&token="+$token)
-	completedItems = JSON.parse(completedItems)
-
-	completedItems.each do |item|
-		if item['idCheckItem'] == itemId
-			return true
-		end
-	end
-
-	return false
-end
+### Member methods
 
 def getMember(memberId)
 	member = RestClient.get("https://api.trello.com/1/members/"+memberId+"?key="+$key+"&token="+$token+"&filter=open")
@@ -76,26 +45,15 @@ def isThisMe(memberId)
 	end
 end
 
-def getCardActions(cardId)
-	actions = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?key="+$key+"&token="+$token)
-	actions = JSON.parse(actions)
+### Collecting data from Trello
+
+def getLists(idBoard)
+	list = RestClient.get("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+$key+"&token="+$token)
 end
 
-def getCardComments(cardId)
-	actions = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+$key+"&token="+$token)
-	actions = JSON.parse(actions)
-end
-
-def cardUpdated(cardId)
-	reply = RestClient.get('https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+$key+'&token='+$token)
-
-	updates = JSON.parse(reply.body)
-end
-
-def cardCreated(cardId)
-	reply = RestClient.get('https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+$key+'&token='+$token)
-
-	updates = JSON.parse(reply.body)
+def getList(listId)
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"?key="+$key+"&token="+$token)
+	list = JSON.parse(list)	
 end
 
 def getSingleCard(cardId)
@@ -227,11 +185,56 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 	return arrayCardsFull
 end
 
+### Additional card information
 
+def getCardActions(cardId)
+	actions = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
 
+def getCardComments(cardId)
+	actions = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?filter=commentCard&key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
 
+def cardUpdated(cardId)
+	reply = RestClient.get('https://api.trello.com/1/cards/'+cardId+'/actions?filter=updateCard&key='+$key+'&token='+$token)
 
+	updates = JSON.parse(reply.body)
+end
 
+def cardCreated(cardId)
+	reply = RestClient.get('https://api.trello.com/1/cards/'+cardId+'/actions?filter=createCard&key='+$key+'&token='+$token)
+
+	updates = JSON.parse(reply.body)
+end
+
+def isCompleted(cardId, itemId)
+	completedItems = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checkitemstates?key="+$key+"&token="+$token)
+	completedItems = JSON.parse(completedItems)
+
+	completedItems.each do |item|
+		if item['idCheckItem'] == itemId
+			return true
+		end
+	end
+
+	return false
+end
+
+def getChecklist(cardId)
+	checklists = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+$key+"&token="+$token)
+	data = JSON.parse(checklists)
+
+	return data  
+end
+
+def getAttachment(cardId)
+	attachments = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+$key+"&token="+$token)
+	data = JSON.parse(attachments)
+
+	return data
+end
 
 
 
@@ -320,7 +323,7 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 	#DB connection
 	my = Mysql.init
 	my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-	my.real_connect('localhost', 'root', 'jMuaeObS4a', 'joomla15')
+	my.real_connect(dbserver, dbuser, dbpassword, db)
 	my.query("SET NAMES utf8")
 
 	stmt = my.prepare("UPDATE jos_content SET `introtext`='"+htmlSite+"' WHERE id="+joomlaArticleId.to_s)
@@ -332,49 +335,34 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 end
 
 
-def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
+def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
+	
+	# Database connection
+	dbserver = 'localhost'
+	dbuser = 'root'
+	dbpassword = 'jMuaeObS4a'
+	db = 'joomla15'
 	
 	card = getSingleCard(cardId)
-	title = card['name']
-	description = card['desc']
+	title = card['name']	
+	description = Kramdown::Document.new(card['desc']).to_html
 	
-	description = Kramdown::Document.new(description).to_html
-	
-	created = nil
+	changed = nil
 	if !cardUpdated(cardId).empty?
-		created = getDate(cardUpdated(cardId).first['date'], 'joomla')
+		changed = getDate(cardUpdated(cardId).first['date'], 'joomla')
 	else
-		created = getDate(cardCreated(cardId).first['date'], 'joomla')
-	end
-	
-	hasAttachment = getAttachment(cardId) 
-	attachments = Hash.new 
-	if hasAttachment[0] != nil
-		c = 0
-		hasAttachment.each do |attachment|
-	
-			url = attachment['url']
-			attachment['name']
-	
-			attHash = Hash.new
-			attHash['url'] = url
-			attHash['name'] = attachment['name']
-	
-			attachments[c] = attHash
-	
-			c += 1
-		end	
+		changed = getDate(cardCreated(cardId).first['date'], 'joomla')
 	end
 	
 	# attachments
-	if attachments != nil
-		description << "<ul>"
-		i = 0
-		while i < attachments.length do
-			description << "<li><a href=\""+attachments[i]['url']+"\">\""+attachments[i]['name']+"\"</a></li>"
-			i += 1
+	hasAttachment = getAttachment(cardId)
+	
+	if hasAttachment[0] != nil
+		description += "<ul>"		
+		hasAttachment.each do |att|	
+			description += "<li><a href=\""+att['url']+"\">\""+att['name']+"\"</a></li>"
 		end
-		description << "</ul>"
+		description += "</ul>"
 	end
 	# end attachments
 	
@@ -383,25 +371,20 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 	hasChecklist = getChecklist(cardId) 
 	
 	if hasChecklist[0] != nil
-		checklistHtml = String.new
 		hasChecklist.each do |checklist| 			
-			checklistHtml += "<h4>"+checklist['name']+"</h4>"
-			checklistHtml += "<ul>"
+			description += "<h4>"+checklist['name']+"</h4>"
+			description += "<ul>"
 			checklist['checkItems'].each do |item|				
 				if isCompleted(cardId, item['id'])
-					checklistHtml += "<li><del>"+item['name']+"</del></li>"
+					description += "<li><del>"+item['name']+"</del></li>"
 				else
-					checklistHtml += "<li>"+item['name']+"</li>"
+					description += "<li>"+item['name']+"</li>"
 				end
 			end
-			checklistHtml += "</ul>"
-		end
-		
-		description += checklistHtml		
+			description += "</ul>"
+		end	
 	end
 	# end checklists
-
-	jalias = title.downcase	
 
 	if joomlaVersion == 2.5
 		#debug
@@ -410,31 +393,96 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 		#DB connection
 		my = Mysql.init
 		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-		my.real_connect('localhost', 'root', 'jMuaeObS4a', 'joomla')
+		my.real_connect(dbserver, dbuser, dbpassword, db)
 		my.query("SET NAMES utf8")
 		
-		stmt = my.prepare("INSERT INTO e94bi_content (asset_id, title, alias, `fulltext`, state, sectionid, catid, created, created_by, parentid, ordering, access, language) VALUES (170, '"+title+"', '"+jalias+"', '"+description+"', 1, 0, 19, '"+created+"', 42, 0, 0, 1, '*')")
+		stmt = my.prepare("INSERT INTO e94bi_content (
+													asset_id, 
+													title, 
+													alias,
+													`fulltext`,
+													state, 
+													sectionid, 
+													catid, 
+													created, 
+													created_by,
+													parentid, 
+													ordering, 
+													access, 
+													language
+												) 
+												VALUES (
+													170, 
+													'"+title+"', 
+													'"+title.downcase+"', 
+													'"+description+"', 
+													1, 
+													0, 
+													19, 
+													'"+changed+"', 
+													42, 
+													0, 
+													0, 
+													1, 
+													'*'
+												)"
+											)
 		stmt.execute
 
 		newArticleId = nil
-		my.query("SELECT id FROM e94bi_content WHERE created='"+created+"' AND title='"+title+"'").each do |thisid|
+		my.query("SELECT id 
+							FROM e94bi_content 
+							WHERE created='"+changed+"' 
+							AND title='"+title+"'"
+						).each do |thisid|
 			pp thisid
 			newArticleId = thisid[0]
 		end
 
-		stmt = my.prepare("INSERT INTO e94bi_menu (menutype, title, alias, path, link, type, published, parent_id, level, component_id, access, lft, rgt, language) VALUES('aboutjoomla', '"+title+"', '"+jalias+"', 'getting-started/"+jalias+"', 'index.php?option=com_content&view=article&id="+newArticleId+"', 'component', 1, 437, 2, 22, 1, 44, 45, '*')")
+		stmt = my.prepare("INSERT INTO e94bi_menu (
+													menutype, 
+													title, 
+													alias, path, 
+													link, 
+													type, 
+													published, 
+													parent_id, 
+													level, 
+													component_id, 
+													access, 
+													lft, 
+													gt, 
+													language
+												) 
+												VALUES(
+													'aboutjoomla', 
+													'"+title+"', 
+													'"+title.downcase+"', 
+													'getting-started/"+title.downcase+"', 
+													'index.php?option=com_content&view=article&id="+newArticleId+"', 
+													'component', 
+													1, 
+													437, 
+													2, 
+													22, 
+													1, 
+													44, 
+													45, 
+													'*'
+												)"
+											)
 		stmt.execute
 
 		my.close if my
 
 	elsif joomlaVersion == 1.5
 		#debug
-		#puts "Joomla! 1.5"
+		puts "Joomla! 1.5"
 
 		#DB connection
 		my = Mysql.init
 		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-		my.real_connect('localhost', 'root', 'jMuaeObS4a', 'joomla15')
+		my.real_connect(dbserver, dbuser, dbpassword, db)
 		my.query("SET NAMES utf8")
 
 		# checking if this acrticle already exists
@@ -465,14 +513,14 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 				)
 				VALUES (
 					'"+title+"', 
-					'"+jalias+"', 
+					'"+title.downcase+"', 
 					'"+description.gsub(/'/, '&#39;')+"', 
 					1, 
 					'"+sectionid+"', 
 					'"+catid+"', 
-					'"+created+"', 
+					'"+changed+"', 
 					62, 
-					'"+created+"',
+					'"+changed+"',
 					0, 
 					1, 
 					0,
@@ -487,7 +535,7 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 			newArticles = my.query("
 				SELECT id 
 				FROM jos_content 
-				WHERE created='"+created+"' 
+				WHERE created='"+changed+"' 
 				AND title='"+title+"'
 			")
 			newArticles.each do |thisid|
@@ -512,7 +560,7 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 				VALUES (
 					'mainmenu', 
 					'"+title+"', 
-					'"+jalias+"', 
+					'"+title.downcase+"', 
 					'index.php?option=com_content&view=article&id="+newArticleId+"', 
 					'component', 
 					1, 
@@ -535,19 +583,19 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 				existingModified = thisArticle[2]
 				
 				# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla
-				if existingModified != created
+				if existingModified != changed
 					stmt = my.prepare("
 						UPDATE jos_content 
 						SET
 							title = '"+title+"',
-							alias = '"+jalias+"',
+							alias = '"+title.downcase+"',
 							`introtext` = '"+description.gsub(/'/, '&#39;')+"',
 							state = 1,
 							sectionid = 5,
 							catid = 34,
-							created = '"+created+"',
+							created = '"+changed+"',
 							created_by = 62,
-							modified = '"+created+"',
+							modified = '"+changed+"',
 							parentid = 0,
 							ordering = 1,
 							access = 0
@@ -559,8 +607,6 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 				else 
 					pp 'Nothing changed: '+cardId+" : "+title
 				end
-				
-				#exit
 			end
 		end
 		
@@ -569,8 +615,13 @@ def trelloToJoomlaMultiple(cardId, sectionid, catid, joomlaVersion = 1.5)
 	end
 end
 
-
-def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new, joomlaVersion = 1.5)
+=begin
+def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new)
+	
+	dbserver = 'localhost'
+	dbuser = 'root'
+	dbpassword = 'jMuaeObS4a'
+	db = 'joomla15'
 	
 	description = Kramdown::Document.new(description).to_html
 
@@ -586,12 +637,12 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 	end
 	# end attachments
 
-	jalias = title.downcase	
+	title.downcase = title.downcase	
 
 	#DB connection
 	my = Mysql.init
 	my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-	my.real_connect('localhost', 'root', 'jMuaeObS4a', 'wordpress')
+	my.real_connect(dbserver, dbuser, dbpassword, db)
 	my.query("SET NAMES utf8")
 
 	# checking if this acrticle already exists
@@ -622,7 +673,7 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 			)
 			VALUES (
 				'"+title+"', 
-				'"+jalias+"', 
+				'"+title.downcase+"', 
 				'"+description.gsub(/'/, '&#39;')+"', 
 				1, 
 				'"+sectionid+"', 
@@ -669,7 +720,7 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 			VALUES (
 				'mainmenu', 
 				'"+title+"', 
-				'"+jalias+"', 
+				'"+title.downcase+"', 
 				'index.php?option=com_content&view=article&id="+newArticleId+"', 
 				'component', 
 				1, 
@@ -697,7 +748,7 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 					UPDATE jos_content 
 					SET
 						title = '"+title+"',
-						alias = '"+jalias+"',
+						alias = '"+title.downcase+"',
 						`introtext` = '"+description.gsub(/'/, '&#39;')+"',
 						state = 1,
 						sectionid = 5,
@@ -724,3 +775,4 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 	my.close if my
 
 end
+=end

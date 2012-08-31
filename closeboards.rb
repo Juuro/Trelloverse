@@ -14,7 +14,7 @@ $token = 'f60eaa453d5eba261d03b8f10508ff21b302f87409f782932fd0d87ca67c4307'
 
 puts "Member: "+getMember('me')['username']
 
-boards = open("https://api.trello.com/1/members/juurotest2/boards?key="+$key+"&token="+$token+"&filter=open").read
+boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
 #parse JSON
 data = JSON.parse(boards)
 
