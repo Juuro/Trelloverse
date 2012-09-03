@@ -10,8 +10,6 @@ require 'kramdown'
 ### Date
 
 def getDate(date, format='de')
-	
-	#fdate = Time.new
 	fdate = Time.iso8601(date).getlocal
 	
 	if format=='de'
@@ -30,6 +28,8 @@ def getDate(date, format='de')
 end
 
 
+
+
 ### Member methods
 
 def getMember(memberId)
@@ -45,10 +45,45 @@ def isThisMe(memberId)
 	end
 end
 
+def getMembersByBoard(boardId)
+	members = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/members?&key="+$key+"&token="+$token)
+	members = JSON.parse(members)	
+end
+
+
+
+
 ### Collecting data from Trello
 
-def getLists(idBoard)
-	list = RestClient.get("https://api.trello.com/1/boards/"+idBoard+"/lists?key="+$key+"&token="+$token)
+def getBoardsByMember(memberId)
+	boards = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boards?key="+$key+"&token="+$token+"&filter=open")
+	boards = JSON.parse(boards)
+end
+
+def getOrganizationsByMember(memberId)
+	orgas = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizations?key="+$key+"&token="+$token+"")
+	orgas = JSON.parse(orgas)
+end
+
+def getBoardsByOrganization(orgId)
+	boards = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/boards?key="+$key+"&token="+$token+"&filter=open")
+	boards = JSON.parse(boards)
+end
+
+def getCardsByOrganization(orgId)
+	boards = getBoardsByOrganization(orgId)
+	
+	cards = Array.new
+	boards.each do |board|
+		cards += getCardsByBoard(board['id'])
+	end
+	
+	return cards
+end
+
+def getListsByBoard(boardId)
+	list = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/lists?key="+$key+"&token="+$token)
+	list = JSON.parse(list)	
 end
 
 def getList(listId)
@@ -185,6 +220,9 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 	return arrayCardsFull
 end
 
+
+
+
 ### Additional card information
 
 def getCardActions(cardId)
@@ -239,15 +277,15 @@ end
 
 
 
-
-
-
-
-
-
-
+### CMS methods
 
 def trelloToJoomlaSingle(joomlaArticleId, articles)
+	# Database connection
+	dbhost = 'localhost'
+	dbuser = 'root'
+	dbpassword = 'jMuaeObS4a'
+	db = 'joomla15'
+	
 	htmlSite = "<h3>Universität Tübingen</h3>"
 	
 	htmlSite << "<p> </p>
@@ -320,10 +358,9 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 	File.rename("arbeiten.html.tmp", "arbeiten.html")
 	
 	#save to DB
-	#DB connection
 	my = Mysql.init
 	my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-	my.real_connect(dbserver, dbuser, dbpassword, db)
+	my.real_connect(dbhost, dbuser, dbpassword, db)
 	my.query("SET NAMES utf8")
 
 	stmt = my.prepare("UPDATE jos_content SET `introtext`='"+htmlSite+"' WHERE id="+joomlaArticleId.to_s)
@@ -336,12 +373,6 @@ end
 
 
 def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
-	
-	# Database connection
-	dbserver = 'localhost'
-	dbuser = 'root'
-	dbpassword = 'jMuaeObS4a'
-	db = 'joomla15'
 	
 	card = getSingleCard(cardId)
 	title = card['name']	
@@ -389,11 +420,17 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 	if joomlaVersion == 2.5
 		#debug
 		puts "Joomla! 2.5"
+		
+		# Database connection
+		dbhost = 'localhost'
+		dbuser = 'root'
+		dbpassword = 'jMuaeObS4a'
+		db = 'joomla'
 
 		#DB connection
 		my = Mysql.init
 		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-		my.real_connect(dbserver, dbuser, dbpassword, db)
+		my.real_connect(dbhost, dbuser, dbpassword, db)
 		my.query("SET NAMES utf8")
 		
 		stmt = my.prepare("INSERT INTO e94bi_content (
@@ -477,148 +514,129 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 
 	elsif joomlaVersion == 1.5
 		#debug
-		puts "Joomla! 1.5"
+		#puts "Joomla! 1.5"
 
-		#DB connection
-		my = Mysql.init
-		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-		my.real_connect(dbserver, dbuser, dbpassword, db)
-		my.query("SET NAMES utf8")
-
-		# checking if this acrticle already exists
-		existingArticle = nil
-		existingArticleQuery = my.query("
-			SELECT id, created, modified
-			FROM jos_content 
-			WHERE metadata='"+cardId+"'
-		")
+		# Database connection
+		dbhost = 'localhost'
+		dbuser = 'root'
+		dbpassword = 'jMuaeObS4a'
+		db = 'joomla15'
 		
-		# if article doesn't exist insert it into the db
-		if existingArticleQuery.num_rows == 0
-			stmt = my.prepare("
-				INSERT INTO jos_content (
-					title, 
-					alias, 
-					`introtext`, 
-					state, 
-					sectionid, 
-					catid, 
-					created, 
-					created_by, 
-					modified,
-					parentid, 
-					ordering, 
-					access,					
-					metadata
-				)
-				VALUES (
-					'"+title+"', 
-					'"+title.downcase+"', 
-					'"+description.gsub(/'/, '&#39;')+"', 
-					1, 
-					'"+sectionid+"', 
-					'"+catid+"', 
-					'"+changed+"', 
-					62, 
-					'"+changed+"',
-					0, 
-					1, 
-					0,
-					'"+cardId+"'
-				)
-			")
-			
-			stmt.execute
-			
-			# identify id of the new article
-			newArticleId = nil
-			newArticles = my.query("
-				SELECT id 
+		begin
+			my = Mysql.init
+			my.options(Mysql::SET_CHARSET_NAME, 'utf8')
+			my.real_connect(dbhost, dbuser, dbpassword, db)
+			my.query("SET NAMES utf8")
+		rescue Mysql::Error => e
+			puts e
+			return	
+		end		
+
+		# checking if this card exists as article already
+		begin
+			existingArticleQuery = my.query("
+				SELECT id, created, modified
 				FROM jos_content 
-				WHERE created='"+changed+"' 
-				AND title='"+title+"'
+				WHERE metadata='"+cardId+"'
 			")
-			newArticles.each do |thisid|
-				newArticleId = thisid[0]
-			end
-			
-			# insert the new article into the menu
-			stmt = my.prepare("
-				INSERT INTO jos_menu (
-					menutype,
-					name, 
-					alias, 
-					link, 
-					type, 
-					published, 
-					parent, 
-					componentid, 
-					sublevel, 
-					access, 
-					lft, 
-					rgt) 
-				VALUES (
-					'mainmenu', 
-					'"+title+"', 
-					'"+title.downcase+"', 
-					'index.php?option=com_content&view=article&id="+newArticleId+"', 
-					'component', 
-					1, 
-					27, 
-					20, 
-					1, 
-					0, 
-					0, 
-					0
-				)
-			")
-			stmt.execute
-			pp 'New article: '+cardId+" : "+title
+		rescue Mysql::Error => e
+			puts e
 		else
-			# this should be only one because per Trello card id should only exist one article in Joomla
-			existingArticleQuery.each do |thisArticle|				
-				
-				existingId = thisArticle[0]
-				existingCreated = thisArticle[1]
-				existingModified = thisArticle[2]
-				
-				# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla
-				if existingModified != changed
+			# if article doesn't exist insert it into the db
+			if existingArticleQuery.num_rows == 0
+				begin
 					stmt = my.prepare("
-						UPDATE jos_content 
-						SET
-							title = '"+title+"',
-							alias = '"+title.downcase+"',
-							`introtext` = '"+description.gsub(/'/, '&#39;')+"',
-							state = 1,
-							sectionid = 5,
-							catid = 34,
-							created = '"+changed+"',
-							created_by = 62,
-							modified = '"+changed+"',
-							parentid = 0,
-							ordering = 1,
-							access = 0
-						WHERE
-							metadata = '"+cardId+"'
+						INSERT INTO jos_content (
+							title, 
+							alias, 
+							`introtext`, 
+							state, 
+							sectionid, 
+							catid, 
+							created, 
+							created_by, 
+							modified,
+							parentid, 
+							ordering, 
+							access,					
+							metadata
+						)
+						VALUES (
+							?, 
+							?, 
+							?, 
+							1, 
+							?, 
+							?, 
+							?, 
+							62, 
+							?,
+							0, 
+							1, 
+							0,
+							?
+						)
 					")
-					stmt.execute
-					pp 'Changed: '+cardId+" : "+title
-				else 
-					pp 'Nothing changed: '+cardId+" : "+title
+					
+					stmt.execute title, title.downcase, description.gsub(/'/, '&#39;'), sectionid, catid, changed, changed, cardId
+					puts 'New article: '+cardId+" : "+title		
+				rescue Mysql::Error => e
+					puts e
+					return
+				ensure
+					stmt.close if stmt
+				end				
+			else
+				# this should be only one because per Trello card id should only exist one article in Joomla
+				existingArticleQuery.each do |thisArticle|				
+					
+					existingId = thisArticle[0]
+					existingModified = thisArticle[2]
+					
+					# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla
+					begin 
+						if existingModified != changed
+							stmt = my.prepare("
+								UPDATE jos_content 
+								SET
+									title = '"+title+"',
+									alias = '"+title.downcase+"',
+									`introtext` = '"+description.gsub(/'/, '&#39;')+"',
+									state = 1,
+									sectionid = 5,
+									catid = 34,
+									created = '"+changed+"',
+									created_by = 62,
+									modified = '"+changed+"',
+									parentid = 0,
+									ordering = 1,
+									access = 0
+								WHERE
+									metadata = '"+cardId+"'
+							")
+							stmt.execute
+							puts 'Changed: '+cardId+" : "+title
+						else 
+							puts 'Nothing changed: '+cardId+" : "+title
+						end					
+					rescue Mysql::Error => e
+						puts e
+						return
+					ensure
+						stmt.close if stmt
+					end
 				end
-			end
+			end	
+		ensure
+			my.close if my
 		end
-		
-		my.close if my
-
 	end
 end
 
 =begin
 def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new)
 	
-	dbserver = 'localhost'
+	dbhost = 'localhost'
 	dbuser = 'root'
 	dbpassword = 'jMuaeObS4a'
 	db = 'joomla15'
@@ -642,7 +660,7 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 	#DB connection
 	my = Mysql.init
 	my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-	my.real_connect(dbserver, dbuser, dbpassword, db)
+	my.real_connect(dbhost, dbuser, dbpassword, db)
 	my.query("SET NAMES utf8")
 
 	# checking if this acrticle already exists
@@ -739,7 +757,6 @@ def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, descript
 		existingArticleQuery.each do |thisArticle|				
 
 			existingId = thisArticle[0]
-			existingCreated = thisArticle[1]
 			existingModified = thisArticle[2]
 
 			# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla

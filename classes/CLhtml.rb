@@ -25,7 +25,7 @@ class CLHtml
 
     opts = OptionParser.new do |opts|
       opts.banner = "Usage: html.rb [options]"
-      opts.separator "Select the input cards with -c, -l, -b or -a"
+      opts.separator "Select the input cards with -c, -l, -b, -o or -a"
       opts.separator ""
       opts.separator "Specific options:"
     
@@ -37,6 +37,11 @@ class CLHtml
       # Trello list(s)
       opts.on("-l x,y,z", "--lists x,y,z", Array, "Ids of one or more Trello lists.") do |lists|
         options.lists = lists
+      end
+      
+      # Trello organization(s)
+      opts.on("-o x,y,z", "--organizations x,y,z", Array, "Ids of one or more Trello organizations.") do |organizations|
+        options.organizations = organizations
       end
 
       # Trello board(s)

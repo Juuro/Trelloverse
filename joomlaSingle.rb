@@ -1,5 +1,6 @@
 require 'json'
 require 'open-uri'
+require 'rest_client'
 require 'pp'
 require 'kramdown'
 require './functions.rb'
@@ -31,6 +32,13 @@ if !options.boards.nil?
 	end
 end
 
+if !options.organizations.nil?
+	options.organizations.each do |orgId|
+		cardsByOrganization = getCardsByOrganization(orgId)
+		cardsToImport = cardsToImport|cardsByOrganization
+	end
+end
+
 if !options.cards.nil?
 	options.cards.each do |cardId|
 		cardsByCard = getSingleCard(cardId)
@@ -39,7 +47,7 @@ if !options.cards.nil?
 end
 
 if options.all == true
-	boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
+	boards = RestClient.get("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open")
 	boards = JSON.parse(boards)
 
 	boards.each do |board|
@@ -49,7 +57,7 @@ if options.all == true
 end
 
 #website aufrufen
-list = open("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key="+$key+"&token="+$token+"&filter=open").read
+list = RestClient.get("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key="+$key+"&token="+$token+"&filter=open")
 
 articles = []
 

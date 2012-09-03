@@ -40,6 +40,11 @@ class CLJoomlaMultiple
         options.lists = lists
       end
 
+      # Trello organization(s)
+      opts.on("-o x,y,z", "--organizations x,y,z", Array, "Ids of one or more Trello organizations.") do |organizations|
+        options.organizations = organizations
+      end
+
       # Trello board(s)
       opts.on("-b x,y,z", "--boards x,y,z", Array, "Ids of one or more Trello boards.") do |boards|
         options.boards = boards

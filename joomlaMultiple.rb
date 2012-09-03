@@ -38,6 +38,13 @@ if !options.boards.nil?
 	end
 end
 
+if !options.organizations.nil?
+	options.organizations.each do |orgId|
+		cardsByOrganization = getCardsByOrganization(orgId)
+		cardsToImport = cardsToImport|cardsByOrganization
+	end
+end
+
 if !options.cards.nil?
 	options.cards.each do |cardId|
 		cardsByCard = getSingleCard(cardId)

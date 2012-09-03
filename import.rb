@@ -39,6 +39,7 @@ end
 # $token = 'PUT YOUR TOKEN HERE'
 
 fileJson = nil
+hashOrganizations = Hash.new
 hashBoards = Hash.new
 hashLists = Hash.new
 hashCards = Hash.new
@@ -49,8 +50,6 @@ if !Dir.exists?(directoryNameAttachments)
 	Dir::mkdir(directoryNameAttachments)
 end
 
-puts "\n----- IMPORT BOARDS -----\n\n"
-
 backup = String.new
 Zippy.open(@filename) do |zip|
 	backup = zip['backup.json']
@@ -58,6 +57,38 @@ end
 
 #read backup.json
 fileJson = JSON.parse(backup)
+
+puts "\n----- IMPORT ORGANIZATIONS -----\n\n"
+
+fileJson['organizations'].each do |orga|
+	pp orga['name']+" : "+orga['id']
+	prefs = orga['prefs']
+	
+	begin
+		response = RestClient.post(
+				'https://api.trello.com/1/organizations',
+				:name   => orga['name'],
+				:displayName => orga['displayName'],
+				:desc => orga['desc'],
+				:website => orga['website'],
+				:key     => $key,
+				:token   => $token
+		)
+		puts "\"Organization \""+orga['name']+"\" added!"
+	rescue => e
+		puts "\t"+e.response+" ("+orga['name']+")"
+	else
+		newIdOrganization = JSON.parse(response.body)['id']
+		
+		hashOrganizations[orga['id']] = newIdOrganization
+	end
+	
+end
+
+
+puts "\n----- IMPORT BOARDS -----\n\n"
+
+
 
 # import boards
 uri = URI('https://api.trello.com/1/boards')
@@ -69,6 +100,7 @@ fileJson['boards'].each do |board|
 
 	req.set_form_data('name' => board['name'], 
 										'desc' => board['desc'],
+										'idOrganization' => hashOrganizations[board['idOrganization']],
 										'prefs_permissionLevel' => prefs['permissionLevel'],
 										'prefs_selfJoin' => prefs['selfJoin'],
 										'prefs_invitations' => prefs['invitations'],

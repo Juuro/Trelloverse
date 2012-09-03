@@ -4,8 +4,6 @@
 require 'rubygems'
 require 'pp'
 require 'json'
-require 'open-uri'
-require 'rest_client'
 require 'tmpdir'
 require 'zippy'
 require './functions.rb'
@@ -33,19 +31,20 @@ if @filename.nil?
 	abort
 end
 
-boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
-#parse JSON
-dataBoards = JSON.parse(boards)
+arrayBoards = getBoardsByMember('me')
 
 directoryNameAttachments = File.join(Dir.tmpdir, "attachments")
 
-arrayBoards = Array.new
+arrayMembersByBoards = Array.new
 arrayLists = Array.new
 arrayCards = Array.new
-dataBoards.each do |board|
+arrayOrganizations = Array.new
+
+arrayOrganizations = getOrganizationsByMember('me')
+
+arrayBoards.each do |board|
 	
-	members = open("https://api.trello.com/1/boards/"+board['id']+"/members?&key="+$key+"&token="+$token+"").read
-	dataMembers = JSON.parse(members)
+	dataMembers = getMembersByBoard(board['id'])
 	
 	arrayMembers = Array.new
 	dataMembers.each do |member|			
@@ -58,35 +57,32 @@ dataBoards.each do |board|
 	hashMembers['name'] = board['name']
 	hashMembers['members'] = arrayMembers	
 	
-	arrayBoards.push(hashMembers)	
+	arrayMembersByBoards.push(hashMembers)	
 	
 	hashMembers = nil
 	arrayMembers = nil	
 	
-	lists = open("https://api.trello.com/1/boards/"+board['id']+"/lists?&key="+$key+"&token="+$token+"").read
-	dataLists = JSON.parse(lists)
+	dataLists = getListsByBoard(board['id'])
 	
 	dataLists.each do |list|
 		arrayLists.push(list)
 	end	
 	
-	cards = open("https://api.trello.com/1/boards/"+board['id']+"/cards?&key="+$key+"&token="+$token+"").read
-	dataCards = JSON.parse(cards)
+	dataCards = getCardsByBoard(board['id'])
 	
-	arrayCards = arrayCards + getCardsAsArray(dataCards)
-		
+	arrayCards = getCardsAsArray(dataCards)		
 end
 
 hashBackup = Hash.new
-hashBackup['boards'] = JSON.parse(boards)
-hashBackup['members'] = arrayBoards
+hashBackup['organizations'] = arrayOrganizations
+hashBackup['boards'] = arrayBoards
+hashBackup['members'] = arrayMembersByBoards
 hashBackup['lists'] = arrayLists
 hashBackup['cards'] = arrayCards
 
 backupFile = File.new(File.join(Dir.tmpdir, 'backup.json'), "wb")
 backupFile.puts JSON.generate(hashBackup)
 backupFile.close()
-pp "Done!"
 
 Zippy.create @filename do |zip|
 	zip['backup.json'] = File.open(backupFile)
@@ -103,3 +99,5 @@ end
 
 Dir.rmdir(directoryNameAttachments)
 File.delete(backupFile)
+
+pp "Done!"
