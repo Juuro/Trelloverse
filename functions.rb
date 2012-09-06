@@ -6,6 +6,7 @@ require 'pp'
 require 'rest_client'
 require 'time'
 require 'kramdown'
+require 'json'
 
 ### Date
 
@@ -229,6 +230,37 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 	
 	return arrayCardsFull
 end
+
+def putCloseBoard(boardId)
+	response = RestClient.put(
+		"https://api.trello.com/1/boards/"+boardId+"/closed",
+		"value" => true,
+		"key" => $key, 
+		"token" => $token
+	)
+	response = JSON.parse(response)
+end
+
+def deleteOrganization(orgId)
+	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+def postOrganization(orgName, orgDisplayName, orgDesc, orgWebsite)
+	response = RestClient.post(
+			'https://api.trello.com/1/organizations',
+			:name   => orgName,
+			:displayName => orgDisplayName,
+			:desc => orgDesc,
+			:website => orgWebsite,
+			:key     => $key,
+			:token   => $token
+	)
+	response = JSON.parse(response)
+end
+
+
+
 
 
 

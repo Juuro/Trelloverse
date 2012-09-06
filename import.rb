@@ -61,26 +61,16 @@ fileJson = JSON.parse(backup)
 puts "\n----- IMPORT ORGANIZATIONS -----\n\n"
 
 fileJson['organizations'].each do |orga|
-	pp orga['name']+" : "+orga['id']
 	prefs = orga['prefs']
 	
 	begin
-		response = RestClient.post(
-				'https://api.trello.com/1/organizations',
-				:name   => orga['name'],
-				:displayName => orga['displayName'],
-				:desc => orga['desc'],
-				:website => orga['website'],
-				:key     => $key,
-				:token   => $token
-		)
-		puts "\"Organization \""+orga['name']+"\" added!"
-	rescue => e
+		response = postOrganization(orga['name'], orga['displayName'], orga['desc'], orga['website'])
+	rescue => e		
 		puts "\t"+e.response+" ("+orga['name']+")"
-	else
-		newIdOrganization = JSON.parse(response.body)['id']
+	else		
+		hashOrganizations[orga['id']] = response['id']
 		
-		hashOrganizations[orga['id']] = newIdOrganization
+		puts "\"Organization \""+orga['name']+"\" added!"		
 	end
 	
 end
@@ -88,8 +78,6 @@ end
 
 
 puts "\n----- IMPORT BOARDS -----\n\n"
-
-
 
 # import boards
 uri = URI('https://api.trello.com/1/boards')
