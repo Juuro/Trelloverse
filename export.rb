@@ -70,7 +70,7 @@ arrayBoards.each do |board|
 	
 	dataCards = getCardsByBoard(board['id'])
 	
-	arrayCards = getCardsAsArray(dataCards)		
+	arrayCards += getCardsAsArray(dataCards)		
 end
 
 hashBackup = Hash.new

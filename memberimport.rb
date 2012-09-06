@@ -39,17 +39,15 @@ end
 #$token = 'PUT YOUR TOKEN HERE'
 
 cardsRelation = Hash.new
-boardsRelation = Hash.new
 
 backup = String.new
 Zippy.open('backup.zip') do |zip|
   backup = JSON.parse(zip['backup.json'])
   
-  if zip['boards.json'] == nil && zip['cards.json'] == nil
-    puts "Error: \"boards.json\" and \"cards.json\" are not existing."
+  if zip['cards.json'] == nil
+    puts "Error: \"cards.json\" are not existing."
     exit
   end
-  boardsRelation = JSON.parse(zip['boards.json'])
   cardsRelation = JSON.parse(zip['cards.json'])
 end
 
@@ -58,34 +56,6 @@ cardsOld = backup['cards']
 
 puts "\n----- IMPORT MEMBERS -----\n\n"
 
-puts "Please visit http://www.trello.com. Login as "+getMember('me')['username']+" ("+getMember('me')['id']+")! Add the following members to the corresponding boards MANUALLY.\n"
-
-boardsOld.each do |board|
-
-  puts "\n"+board['name']+" ("+board['id']+"):\n"
-
-  board['members'].each do |member|
-    puts "\t"+member['username']+" ("+member['id']+")"
-  end
-end
-
-puts "\nIf you have added all necessary members to your boards press ENTER to continue!"
-gets
-
-boardsOld.each do |board|	
-  membersNewBoard = open("https://api.trello.com/1/boards/"+boardsRelation[board['id']]+"/members?key="+$key+"&token="+$token+"").read
-  membersNewBoard = JSON.parse(membersNewBoard)	
-
-  missingMembers = board['members'] - membersNewBoard
-  
-  if !missingMembers.empty?
-    missingMembers.each do |member|
-      puts "You haven't added "+member['username']+" ("+member['id']+") to "+board['name']+" ("+board['id']+")!"
-    end
-    puts "Press ENTER to continue!"
-    gets
-  end
-end
 
 cardsOld.each do |card|
   
@@ -99,9 +69,10 @@ cardsOld.each do |card|
           :value   => member,
           :key     => $key,
           :token   => $token
-      )
-      puts "\tMember \""+member+"\" added!"
+      )      
     rescue => e
+      puts "\t"+e.response+" ("+member+")"
+    else
       puts "\t"+e.response+" ("+member+")"
     end      	
   end

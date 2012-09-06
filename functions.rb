@@ -50,6 +50,16 @@ def getMembersByBoard(boardId)
 	members = JSON.parse(members)	
 end
 
+def postMemberInviteBoard(boardId, memberId)
+	response = RestClient.post(
+			'https://api.trello.com/1/boards/'+boardId+'/invitations',
+			:idMember => memberId,
+			:key     => $key,
+			:token   => $token
+	)
+	JSON.parse(response)
+end
+
 
 
 

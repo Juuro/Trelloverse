@@ -30,4 +30,14 @@ data.each do |board|
 	end
 end
 
+
+orgas = getOrganizationsByMember('me')
+
+orgas.each do |orga|
+	
+	response = RestClient.delete("https://api.trello.com/1/organizations/"+orga['id']+"?key="+$key+"&token="+$token+"&filter=open")
+	pp JSON.parse(response)['id']
+	
+end
+
 puts 'Done!'

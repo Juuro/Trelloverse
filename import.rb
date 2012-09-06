@@ -86,6 +86,7 @@ fileJson['organizations'].each do |orga|
 end
 
 
+
 puts "\n----- IMPORT BOARDS -----\n\n"
 
 
@@ -121,41 +122,30 @@ end
 
 pp hashBoards
 
-Zippy.open(@filename) do |zip|
-	zip['boards.json'] = JSON.generate(hashBoards)
-end
-
 puts "\n----- IMPORT MEMBERS -----\n\n"
 
-puts "Please visit http://www.trello.com. Login as "+getMember('me')['username']+" ("+getMember('me')['id']+")! Add the following members to the corresponding boards MANUALLY.\n"
 
 fileJson['members'].each do |board|
 
 	puts "\n"+board['name']+" ("+board['id']+"):\n"
 
 	board['members'].each do |member|
-		puts "\t"+member['username']+" ("+member['id']+")"
-	end
-end
-
-puts "\nIf you have added all necessary members to your boards press ENTER to continue!"
-gets
-
-fileJson['members'].each do |board|	
-	membersNewBoard = open("https://api.trello.com/1/boards/"+hashBoards[board['id']]+"/members?key="+$key+"&token="+$token+"").read
-	membersNewBoard = JSON.parse(membersNewBoard)	
-
-	missingMembers = board['members'] - membersNewBoard
-
-	if !missingMembers.empty?
-		missingMembers.each do |member|
-			puts "You haven't added "+member['username']+" ("+member['id']+") to "+board['name']+" ("+board['id']+")!"
+		begin
+			response = postMemberInviteBoard(hashBoards[board['id']], member['id'])
+		
+		rescue => e
+			puts "\t"+e.response
+		else 
+			puts "\tMember "+member['id']+" ("+response['idMemberInvited']+") invited!"
 		end
-		puts "Press ENTER to continue!"
-		gets
 	end
 end
 
+puts "All members are now invited to join the imported boards. In order to add them to the respective cards they have to accecpt the invitations."
+puts "To add the members to the cards later, please execute memberimport.rb."
+puts "Press ENTER to continue."
+
+gets
 
 puts "\n----- CLOSE STANDARD LISTS -----\n\n"
 
