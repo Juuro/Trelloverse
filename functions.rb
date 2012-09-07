@@ -241,6 +241,15 @@ def putCloseBoard(boardId)
 	response = JSON.parse(response)
 end
 
+def putCloseList(listId)
+	response = RestClient.put('https://api.trello.com/1/lists/'+listId+'/closed',
+		:value => true,
+		:key =>$key,
+		:token =>$token
+	)
+	response = JSON.parse(response)
+end
+
 def deleteOrganization(orgId)
 	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"?key="+$key+"&token="+$token+"&filter=open")
 	response = JSON.parse(response)
@@ -259,6 +268,77 @@ def postOrganization(orgName, orgDisplayName, orgDesc, orgWebsite)
 	response = JSON.parse(response)
 end
 
+def postBoard(boardName, boardDesc, idOrganization, permissionLevel, selfJoin, invitations, comments, voting)
+	response = RestClient.post(
+		'https://api.trello.com/1/boards',
+		:name => boardName, 
+		:desc => boardDesc,
+		:idOrganization => idOrganization,
+		:prefs_permissionLevel => permissionLevel,
+		:prefs_selfJoin => selfJoin,
+		:prefs_invitations => invitations,
+		:prefs_comments => comments,
+		:prefs_voting => voting,
+		:key => $key,
+		:token => $token
+	)
+	response = JSON.parse(response)
+end
+
+def postList(listName, idBoard)
+	response = RestClient.post(
+		'https://api.trello.com/1/lists',
+		:name => listName, 
+		:idBoard => idBoard,
+		:key=>$key,
+		:token=>$token
+	)
+	response = JSON.parse(response)
+end
+
+def postCard(cardName, cardDesc, cardPos, idList)
+	response = RestClient.post(
+		'https://api.trello.com/1/cards',
+		'name' => cardName,
+		'desc' => cardDesc,
+		'pos' => cardPos,
+		'idList' => idList,
+		'key'=>$key,
+		'token'=>$token
+	)
+	response = JSON.parse(response)
+end
+
+def postChecklist(name, idBoard)
+	response = RestClient.post(
+		'https://api.trello.com/1/checklists',
+		:name => name,
+		:idBoard => idBoard,
+		:key => $key,
+		:token => $token
+	)
+	response = JSON.parse(response)
+end
+
+def postAddChecklistToCard(cardId, checklistId)
+	response = RestClient.post(
+		'https://api.trello.com/1/cards/'+cardId+'/checklists',
+		:value => checklistId,
+		:key		=>	$key,
+		:token	=>	$token
+	)
+	response = JSON.parse(response)
+end
+
+def postMemberAddCard(cardId, member)
+	response = RestClient.post(
+			'https://api.trello.com/1/cards/'+cardId+'/members',
+			:value   => member,
+			:key     => $key,
+			:token   => $token
+	)
+	response = JSON.parse(response)
+end
 
 
 
@@ -316,6 +396,100 @@ def getAttachment(cardId)
 	return data
 end
 
+def postCheckItem(checklistId, name)
+	response = RestClient.post(
+		'https://api.trello.com/1/checklists/'+checklistId+'/checkItems',
+		:name => name,
+		:key =>$key,
+		:token=>$token
+	)
+	response = JSON.parse(response)
+end
+
+def putCheckItemStatus(cardId, checklistId, itemId, status)
+	response = RestClient.put(
+			'https://api.trello.com/1/cards/'+cardId+'/checklist/'+checklistId+'/checkItem/'+itemId+'/state',
+			:idCheckList       	=>  checklistId,
+			:idCheckItem				=>  itemId,
+			:value							=>	status,
+			:key        				=>  $key,
+			:token   						=>  $token
+	)
+	response = JSON.parse(response)
+end
+
+def putCheckItemPos(cardId, checklistId, itemId, pos)
+	response = RestClient.put(
+			'https://api.trello.com/1/cards/'+cardId+'/checklist/'+checklistId+'/checkItem/'+itemId+'/pos',
+			:idCheckList       	=>  checklistId,
+			:idCheckItem				=>  itemId,
+			:value							=>	pos,
+			:key        				=>  $key,
+			:token   						=>  $token
+	)
+	response = JSON.parse(response)
+end
+
+def postLabel(cardId, color)
+	response = RestClient.post(
+		'https://api.trello.com/1/cards/'+cardId+'/labels',
+		:value => color,
+		:key =>$key,
+		:token =>$token
+	)
+	response = JSON.parse(response)
+end
+
+def postComment(cardId, commentText)
+	response = RestClient.post(
+		'https://api.trello.com/1/cards/'+cardId+'/actions/comments',
+		:text => commentText,
+		:key =>$key,
+		:token =>$token
+	)
+	response = JSON.parse(response)
+end
+
+def postAttachments(cardId, file, name)
+	response = RestClient.post(
+			'https://api.trello.com/1/cards/'+cardId+'/attachments',
+			:file       =>  file,
+			:name				=>  name,
+			:key        =>  $key,
+			:token   		=>  $token
+	)
+	response = JSON.parse(response)
+end
+
+def putDueDate(cardId, duedate)
+	response = RestClient.put(
+			'https://api.trello.com/1/cards/'+cardId+'/due',
+			:value       =>  duedate,
+			:key        =>  $key,
+			:token   		=>  $token
+	)
+	response = JSON.parse(response)
+end
+
+def postVoting(cardId, member)
+	response = RestClient.post(
+			'https://api.trello.com/1/cards/'+cardId+'/membersVoted',
+			:value   => member,
+			:key     => $key,
+			:token   => $token
+	)
+	response = JSON.parse(response)
+end
+
+def putSubscribe(cardId, value)	
+	response = RestClient.put(
+			'https://api.trello.com/1/cards/'+cardId+'/subscribed',
+			:value   => value,
+			:key     => $key,
+			:token   => $token
+	)
+	response = JSON.parse(response)
+end
 
 
 
