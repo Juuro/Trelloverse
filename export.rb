@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 #Encoding: UTF-8
 
-require 'rubygems'
-require 'pp'
 require 'json'
 require 'tmpdir'
 require 'zippy'
@@ -11,9 +9,9 @@ require './classes/CLbackup.rb'
 
 options = CLbackup.parse(ARGV)
 
-$key = options.key.first
-$token = options.token.first
-@filename = options.name.first
+$key = options.key
+$token = options.token
+@filename = options.name
 
 # debug
 #Juurotest
@@ -27,7 +25,7 @@ $token = options.token.first
 puts "Member: "+getMember('me')['username']
 
 if @filename.nil?
-	pp "You have to specify a filename for the backup file!"
+	puts "You have to specify a filename for the backup file!"
 	abort
 end
 
@@ -100,4 +98,4 @@ end
 Dir.rmdir(directoryNameAttachments)
 File.delete(backupFile)
 
-pp "Done!"
+puts "Done!"

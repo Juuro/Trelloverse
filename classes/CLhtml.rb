@@ -17,9 +17,9 @@ class CLHtml
     # The options specified on the command line will be collected in *options*.
     # We set default values here.
     options = OpenStruct.new
-    options.title = []
-    options.key = []
-    options.token = []
+    options.title = String.new
+    options.key = String.new
+    options.token = String.new
     options.all = false
     options.encoding = "utf8"
 
@@ -56,17 +56,17 @@ class CLHtml
       
       # Trello key
       opts.on("-k MANDATORY, --key", "Your Trello key.") do |key|
-        options.key << key
+        options.key = key
       end
       
       # Trello token
       opts.on("-t MANDATORY, --token", "The Trello token.") do |token|
-        options.token << token
+        options.token = token
       end
       
       # Title of the HTML site.
       opts.on("--title MANDATORY", "A title of the HTML site.") do |title|
-        options.title << title
+        options.title = title
       end
 
     end

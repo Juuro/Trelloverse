@@ -1,15 +1,11 @@
 #!/usr/bin/env ruby
 #Encoding: UTF-8
 
-#require 'rubygems'
 require 'icalendar'
 require 'date'
-require 'pp'
 require 'json'
-require 'open-uri'
 require './functions.rb'
 require './classes/CLical.rb'
-require '.dbconnection.rb'
 
 options = CLcalendar.parse(ARGV)
 
@@ -57,8 +53,7 @@ if !options.cards.nil?
 end
 
 if options.all == true
-	boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
-	boards = JSON.parse(boards)
+	boards = getBoardsByMember('me')
 	
 	boards.each do |board|
 		cardsByBoard = getCardsByBoard(board['id'])
@@ -115,6 +110,6 @@ cal.publish
 icalendar = File.new("icalendar.ics", "w+")
 icalendar.puts cal.to_ical
 
-pp 'Done!'
+puts 'Done!'
 
 icalendar.close()

@@ -1,20 +1,15 @@
 #!/usr/bin/env ruby
 #Encoding: UTF-8
 
-require 'rubygems'
 require 'google/api_client'
-#require 'yaml'
-require 'pp'
 require 'json'
-require 'open-uri'
 require './functions.rb'
 require './classes/CLgcal.rb'
 
-
 options = CLcalendar.parse(ARGV)
 
-$key = options.key.first
-$token = options.token.first
+$key = options.key
+$token = options.token
 
 puts "Member: "+getMember('me')['username']
 
@@ -57,8 +52,7 @@ if !options.cards.nil?
 end
 
 if options.all == true
-	boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
-	boards = JSON.parse(boards)
+	boards = getBoardsByMember('me')
 
 	boards.each do |board|
 		cardsByBoard = getCardsByBoard(board['id'])
@@ -67,8 +61,6 @@ if options.all == true
 end
 
 #cardsFull = getCardsAsArray(cardsToImport, $key, $token, false)
-
-
 
 #oauth_yaml = YAML.load_file('~/Dropbox/Studium/Diplomarbeit/read/.google-api.yaml')
 client = Google::APIClient.new
@@ -85,32 +77,44 @@ service = client.discovered_api('calendar', 'v3')
 
 # delete events from Google if they're not submitted anymore
 getallevents = client.execute(:api_method => service.events.list,
-															:parameters => {'calendarId' => 'primary', 'location' => '*'})
-															
+															:parameters => {'calendarId' => 'primary', 'q' => 'trelloid'})
+
+alleventsArray = Array.new
+keepEvents  = Array.new							
+						
 while true
 	allevents = getallevents.data.items
 	
 	allevents.each do |e|		
+		alleventsArray << e.id
 		
-		if cardsToImport.include?(e.location)
-			pp e.location
+		cardsToImport.each do |card|
+			if card['id'] == e.location.gsub(/trelloid /, '')
+				keepEvents << e.id				
+			end		
 		end
-			
 	end
 	
 	if !(page_token = getallevents.data.next_page_token)
 		break
 	end
 	getallevents = getallevents = client.execute(:api_method => service.events.list,
-																	 :parameters => {'calendarId' => 'primary', 'pageToken' => page_token})
-end	
+																	 							:parameters => {'calendarId' => 'primary', 'pageToken' => page_token})
+end
 
+deleteEvents = alleventsArray - keepEvents
+
+deleteEvents.each do |eventId|
+	client.execute(:api_method => service.events.delete,
+									:parameters => {'calendarId' => 'primary', 'eventId' => eventId})
+	puts eventId+" deleted!"
+end
 
 cardsToImport.each do |card|
 	
 	if card['due'] != nil		
 		getevents = client.execute(:api_method => service.events.list,
-														:parameters => {'calendarId' => 'primary', 'q' => card['id']})
+														:parameters => {'calendarId' => 'primary', 'q' => 'trelloid '+card['id']})
 		
 		while true
 			events = getevents.data.items
@@ -118,7 +122,7 @@ cardsToImport.each do |card|
 				event = {
 					'summary' => card['name'],
 					'description' => card['desc'],
-					'location' => card['id'],
+					'location' => 'trelloid '+card['id'],
 					'start' => {
 						'dateTime' => getDate(card['due'], format='iso8601'),
 						'timeZone' => 'Europe/Berlin'
@@ -127,8 +131,7 @@ cardsToImport.each do |card|
 						'dateTime' => getDate(card['due'], format='iso8601'),
 						'timeZone' => 'Europe/Berlin'
 					}
-				}		
-				
+				}				
 				
 				insertevent = client.execute(:api_method => service.events.insert,
 																:parameters => {'calendarId' => 'primary'},
@@ -146,7 +149,7 @@ cardsToImport.each do |card|
 							event = {
 								'summary' => card['name'],
 								'description' => card['desc'],
-								'location' => card['id'],
+								'location' => 'trelloid '+card['id'],
 								'start' => {
 									'dateTime' => getDate(card['due'], format='iso8601'),
 									'timeZone' => 'Europe/Berlin'
@@ -168,7 +171,7 @@ cardsToImport.each do |card|
 							event = {
 								'summary' => card['name'],
 								'description' => card['desc'],
-								'location' => card['id'],
+								'location' => 'trelloid '+card['id'],
 								'start' => {
 									'dateTime' => getDate(card['due'], format='iso8601'),
 									'timeZone' => 'Europe/Berlin'

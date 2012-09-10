@@ -17,10 +17,9 @@ class CLbackup
     # The options specified on the command line will be collected in *options*.
     # We set default values here.
     options = OpenStruct.new
-    options.title = []
-    options.key = []
-    options.token = []
-    options.name = []
+    options.key = String.new
+    options.token = String.new
+    options.name = String.new
     options.all = false
     options.encoding = "utf8"
     
@@ -30,40 +29,19 @@ class CLbackup
       opts.separator ""
       opts.separator "Specific options:"
       
-=begin
-      # All due dates of all cards of all boards.
-      opts.on("-a", "--[no-]all", "Set this if all due dates of all cards of all boards this user can see shall be used.") do |all|
-        options.all = all
-      end
-      
-      # Trello list(s)
-      opts.on("-l", "--lists x,y,z", Array, "Ids of one or more Trello lists.") do |lists|
-        options.lists = lists
-      end
-      
-      # Trello board(s)
-      opts.on("-b", "--boards x,y,z", Array, "Ids of one or more Trello boards.") do |boards|
-        options.boards = boards
-      end
-      
-      # Trello card(s)
-      opts.on("-c", "--cards x,y,z", Array, "Ids of one or more Trello cards.") do |cards|
-        options.cards = cards
-      end
-=end
       # Filename
       opts.on("-n MANDATORY, --name", "The filename of the backup file.") do |name|
-        options.name << name
+        options.name = name
       end
 
       # Trello key
       opts.on("-k MANDATORY, --key", "Your Trello key.") do |key|
-        options.key << key
+        options.key = key
       end
       
       # Trello token
       opts.on("-t MANDATORY, --token", "The Trello token.") do |token|
-        options.token << token
+        options.token = token
       end
 
     end

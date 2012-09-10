@@ -17,10 +17,10 @@ class CLJoomlaMultiple
     # The options specified on the command line will be collected in *options*.
     # We set default values here.
     options = OpenStruct.new
-    options.section = []
-    options.category = []
-    options.key = []
-    options.token = []
+    options.section = String.new
+    options.category = String.new
+    options.key = String.new
+    options.token = String.new
     options.all = false
     options.encoding = "utf8"
 
@@ -57,22 +57,22 @@ class CLJoomlaMultiple
       
       # Trello key
       opts.on("-k MANDATORY", "Your Trello key.") do |key|
-        options.key << key
+        options.key = key
       end
       
       # Trello token
       opts.on("-t MANDATORY", "The Trello token.") do |token|
-        options.token << token
+        options.token = token
       end
       
       # Joomla section
       opts.on("--section MANDATORY", "Id of a Joomla section.") do |section|
-        options.section << section
+        options.section = section
       end
       
       # Joomla category
       opts.on("--category MANDATORY", "Id of a Joomla category") do |category|
-        options.category << category
+        options.category = category
       end
 
     end

@@ -3,16 +3,18 @@
 
 require 'json'
 require 'rest_client'
-require 'pp'
 require './functions.rb'
 require './classes/CLJoomlaMultiple.rb'
 
 options = CLJoomlaMultiple.parse(ARGV)
 
-$key = options.key.first
-$token = options.token.first
+$key = options.key
+$token = options.token
 
 puts "Member: "+getMember('me')['username']
+
+sectionid = options.section
+catid = options.category
 
 # debug
 #$key = '897f1e4573b21a4c8ad8a5cbb4bb3441'
@@ -53,17 +55,13 @@ if !options.cards.nil?
 end
 
 if options.all == true
-	boards = RestClient.get("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open")
-	boards = JSON.parse(boards)
+	boards = getBoardsByMember('me')
 
 	boards.each do |board|
 		cardsByBoard = getCardsByBoard(board['id'])
 		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
-
-sectionid = options.section.first
-catid = options.category.first
 
 cardsToImport.each do |card|
 	trelloJoomlaSync(card['id'], sectionid, catid, 1.5)

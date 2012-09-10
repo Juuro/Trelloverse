@@ -1,7 +1,8 @@
+#!/usr/bin/env ruby
+#Encoding: UTF-8
+
 require 'json'
-require 'open-uri'
 require 'rest_client'
-require 'pp'
 require 'kramdown'
 require './functions.rb'
 require './classes/article.rb'
@@ -47,17 +48,13 @@ if !options.cards.nil?
 end
 
 if options.all == true
-	boards = RestClient.get("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open")
-	boards = JSON.parse(boards)
+	boards = getBoardsByMember('me')
 
 	boards.each do |board|
 		cardsByBoard = getCardsByBoard(board['id'])
 		cardsToImport = cardsToImport|cardsByBoard
 	end
 end
-
-#website aufrufen
-list = RestClient.get("https://api.trello.com/1/lists/4f68a4ab343ec61a754ad652/cards?key="+$key+"&token="+$token+"&filter=open")
 
 articles = []
 

@@ -8,9 +8,9 @@ require './classes/CLbackup.rb'
 
 options = CLbackup.parse(ARGV)
 
-$key = options.key.first
-$token = options.token.first
-@filename = options.name.first
+$key = options.key
+$token = options.token
+@filename = options.name
 
 # debug
 #$key = '897f1e4573b21a4c8ad8a5cbb4bb3441'

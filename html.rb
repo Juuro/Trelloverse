@@ -4,16 +4,14 @@
 require "erb"
 require "./classes/webpage.rb"
 require 'json'
-require 'open-uri'
-require 'pp'
 require 'kramdown'
 require './functions.rb'
 require './classes/CLhtml.rb'
 
 options = CLHtml.parse(ARGV)
 
-$key = options.key.first
-$token = options.token.first
+$key = options.key
+$token = options.token
 
 puts "Member: "+getMember('me')['username']
 
@@ -53,8 +51,7 @@ if !options.cards.nil?
 end
 
 if options.all == true
-  boards = open("https://api.trello.com/1/members/me/boards?key="+$key+"&token="+$token+"&filter=open").read
-  boards = JSON.parse(boards)
+  boards = getBoardsByMember('me')
 
   boards.each do |board|
     cardsByBoard = getCardsByBoard(board['id'])
@@ -63,7 +60,7 @@ if options.all == true
 end
 
 if !options.title.empty?
-  @htmlTitle = options.title.first
+  @htmlTitle = options.title
 end
 
 cardsFull = getCardsAsArray(cardsToImport, false)
