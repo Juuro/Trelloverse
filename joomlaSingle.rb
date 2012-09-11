@@ -42,7 +42,7 @@ end
 
 if !options.cards.nil?
 	options.cards.each do |cardId|
-		cardsByCard = getSingleCard(cardId)
+		cardsByCard = getCard(cardId)
 		cardsToImport.push(cardsByCard)
 	end
 end
@@ -65,7 +65,7 @@ cardsToImport.each do |element|
 	description = Kramdown::Document.new(element['desc']).to_html
 	
 	#attachment
-	hasAttachment = getAttachment(element['id']) 
+	hasAttachment = getCardAttachments(element['id']) 
 	attachments = []
 	if hasAttachment[0] != nil
 		for attachmentArray in hasAttachment do			

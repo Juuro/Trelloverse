@@ -8,8 +8,332 @@ require 'time'
 require 'kramdown'
 require 'json'
 
+# Get basic information about a board.
+def getBoard(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get a single fiel of a board.
+def getBoardField(boardId, field)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/"+field+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get all board actions.
+def getBoardActions(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/actions?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Filter the cards of a board.
+def getBoardCardsFilter(boardId, filter)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/cards/"+filter+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get a card by board and card.
+def getBoardCardId(boardId, cardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/cards/"+cardId+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get all checklists of a board.
+def getBoardChecklists(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/checklists?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get all lists of a board.
+def getBoardLists(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/lists?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Filter the lists of a board.
+def getBoardListsFilter(boardId, filter)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/lists/"+filter+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get all members of a board.
+def getBoardMembers(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/members?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Filter the members of a board.
+def getBoardMembersFilter(boardId, filter)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/members/"+filter+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get all cards of a member in a specific board.
+def getBoardMembersCards(boardId, memberId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/members/"+memberId+"/cards?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get the invited members of a board.
+def getBoardMembersInvited(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/membersInvited?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get a single field of the invited members of a board.
+def getBoardMembersInvitedField(boardId, field)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/membersInvited/"+field+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get the personal preferences for a board.
+def getBoardMyPrefs(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/myPrefs?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get the organization a board belongs to.
+def getBoardOrganization(boardId)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/organization?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Get a single field of the the organization a board belongs to.
+def getBoardOrganizationField(boardId, field)
+	response = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/organization/"+field+"?&key="+$key+"&token="+$token)
+	response = JSON.parse(response)	
+end
+
+# Change a board.
+def putBoard(boardId, name, desc, closed, subscribed, idOrganization, permissionLevel, selfJoin, cardCovers, invitations, voting, comments)
+
+	hash = Hash.new
+	hash[:name] = name if !name.nil?
+	hash[:desc] = desc if !desc.nil? 
+	hash[:closed] = closed if !closed.nil? 
+	hash[:subscribed] = subscribed if !subscribed.nil? 
+	hash[:idOrganization] = idOrganization if !idOrganization.nil?
+	hash[:prefs_permissionLevel] = permissionLevel if !permissionLevel.nil?
+	hash[:prefs_selfJoin] = selfJoin if !selfJoin.nil?
+	hash[:prefs_cardCovers] = cardCovers if !cardCovers.nil?
+	hash[:prefs_invitations] = invitations if !invitations.nil?
+	hash[:prefs_voting] = voting if !voting.nil?
+	hash[:prefs_comments] = comments if !comments.nil?
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/boards/"+boardId, hash 
+	response = JSON.parse(response)	
+end
+
+# Close or open a board.
+def putBoardClosed(boardId, closed)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/closed',
+			:value 	=> closed,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change board description.
+def putBoardDesc(boardId, desc)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/desc',
+			:value 	=> desc,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Assign board to a different organization.
+def putBoardOrganization(boardId, idOrganization)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/idOrganization',
+			:value 	=> idOrganization,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Assign member to board.
+def putBoardMember(boardId, memberId, type)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/members/'+memberId,
+			:idMember 	=> memberId,
+			:type 			=> type,
+			:key    		=> $key,
+			:token  		=> $token
+	)
+end
+
+# Change board name.
+def putBoardName(boardId, name)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/name',
+			:value 	=> name,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change Card Cover settings.
+def putBoardPrefsCardCovers(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/prefs/cardCovers',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change comments settings.
+def putBoardPrefsComments(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/prefs/comments',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change invitation settings.
+def putBoardPrefsInvitations(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/prefs/invitations',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change permission level settings.
+def putBoardPrefsPermissionLevel(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/prefs/permissionLevel',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change self join settings.
+def putBoardPrefsSelfJoin(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/prefs/selfJoin',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Change voting settings.
+def putBoardPrefsVoting(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/prefs/voting',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Subscribe boards.
+def putBoardSubscribed(boardId, value)
+	response = RestClient.put(
+			'https://api.trello.com/1/boards/'+boardId+'/subscribed',
+			:value 	=> value,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Create a new checklist.
+def postBoardChecklists(boardId, name)
+	response = RestClient.post(
+			'https://api.trello.com/1/boards/'+boardId+'/checklists',
+			:name 	=> name,
+			:key    => $key,
+			:token  => $token
+	)
+end
+
+# Invite members to a board.
+def postBoardInvitations(boardId, memberId, email, type)
+	
+	hash = Hash.new
+	hash[:idMember] = memberId if !memberId.nil?
+	hash[:email] = email if !email.nil?
+	hash[:type] = type if !type.nil?
+	hash[:key] = $key
+	hash[:token] = $token
+	
+	response = RestClient.post "https://api.trello.com/1/boards/"+boardId+"/invitations", hash 
+	response = JSON.parse(response)	
+end
+
+# Create new list.
+def postBoardILists(boardId, name)
+
+	hash = Hash.new
+	hash[:name] = name
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/boards/"+boardId+"/lists", hash 
+	response = JSON.parse(response)	
+end
+
+# Mark as viewd
+def postBoardMarkAsViewed(boardId)
+
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/boards/"+boardId+"/markAsViewed", hash 
+	response = JSON.parse(response)	
+end
+
+# Change personal preferences of the board.
+def postBoardMyPrefs(boardId, name, value)
+
+	hash = Hash.new
+	hash[:name] = name
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/boards/"+boardId+"/myPrefs", hash 
+	response = JSON.parse(response)	
+end
+
+# Delete invitation.
+def deleteBoardInvitation(boardId, idInvitation)
+
+	hash = Hash.new
+	hash[:idInvitation] = idInvitation
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.delete "https://api.trello.com/1/boards/"+boardId+"/invitations/"+idInvitation, hash 
+	response = JSON.parse(response)	
+end
+
+# Delete board member.
+def deleteBoardMember(boardId, idMember)
+
+	hash = Hash.new
+	hash[:idMember] = idMember
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.delete "https://api.trello.com/1/boards/"+boardId+"/invitations/"+idMember, hash 
+	response = JSON.parse(response)	
+end
+
+
 ### Date
 
+# Formatting dates for post processing.
 def getDate(date, format='de')
 	fdate = Time.iso8601(date).getlocal
 	
@@ -70,25 +394,25 @@ end
 
 ### Collecting data from Trello
 
-# Get basic information of all boards of a member as hash.
+# Get basic information of all boards of a member.
 def getBoardsByMember(memberId)
 	boards = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boards?key="+$key+"&token="+$token+"&filter=open")
 	boards = JSON.parse(boards)
 end
 
-# Get basic information of all organizations of a member as hash.
+# Get basic information of all organizations of a member.
 def getOrganizationsByMember(memberId)
 	orgas = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizations?key="+$key+"&token="+$token+"")
 	orgas = JSON.parse(orgas)
 end
 
-# Get basic information of all boards of a organization as hash.
+# Get basic information of all boards of a organization.
 def getBoardsByOrganization(orgId)
 	boards = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/boards?key="+$key+"&token="+$token+"&filter=open")
 	boards = JSON.parse(boards)
 end
 
-# Get basic information of all cards of a organization as hash.
+# Get basic information of all cards of a organization.
 def getCardsByOrganization(orgId)
 	boards = getBoardsByOrganization(orgId)
 	
@@ -100,37 +424,660 @@ def getCardsByOrganization(orgId)
 	return cards
 end
 
-# Get basic information of all lists of a board as hash.
+# Get basic information of all lists of a board.
 def getListsByBoard(boardId)
 	list = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/lists?key="+$key+"&token="+$token)
 	list = JSON.parse(list)	
 end
 
-# Get basic information of a list as hash.
+# Get basic information of a card.
+def getCard(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get a single field of a card.
+def getCardField(cardId, field)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/"+field+"?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get card actions
+def getCardActions(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/actions?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get all checklists of a card.
+def getCardChecklist(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get all attachments of a card.
+def getCardAttachments(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get information about the card's board.
+def getCardBoard(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/board?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+#Get a single field about a card's board.
+def getCardBoardField(cardId, field)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/"+field+"?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get a card's check item states.
+def getCardCheckItemStates(cardId, field)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checkItemStates?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get information about a cards's list.
+def getCardList(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/list?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get a single field of a card's list.
+def getCardListField(cardId, field)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/list/"+field+"?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get members which are assigned to a card.
+def getCardMembers(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/members?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Get members which voted for a card.
+def getCardMembersVoted(cardId)
+	response = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/membersVoted?key="+$key+"&token="+$token)
+	response = JSON.parse(response)
+end
+
+# Change a card.
+def putCard(cardId, name, desc, closed, idAttachmentCover, idList, idBoard, pos, due, subscribed)
+
+	hash = Hash.new
+	hash[:name] = name if !name.nil?
+	hash[:desc] = desc if !desc.nil?
+	hash[:closed] = closed if !closed.nil?
+	hash[:idAttachmentCover] = idAttachmentCover if !idAttachmentCover.nil?
+	hash[:idList] = idList if !idList.nil?
+	hash[:idBoard] = idBoard if !idBoard.nil?
+	hash[:pos] = pos if !pos.nil?
+	hash[:due] = due if !due.nil?
+	hash[:subscribed] = subscribed if !subscribed.nil?
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a comment.
+def putCardComment(cardId, idAction, text)
+
+	hash = Hash.new
+	hash[:idAction] = idAction
+	hash[:text] = text
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/actions/"+idAction+"/comments", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a checkitem's name.
+def putCardCheckItemName(cardId, idChecklist, idCheckItem, value)
+
+	hash = Hash.new
+	hash[:idChecklist] = idChecklist
+	hash[:idCheckItem] = idCheckItem
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/cards/"+cardId+"/checklist/"+idChecklist+"/checkItem/"+idCheckItem+"/name", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a checkitem's position.
+def putCardCheckItemPosition(cardId, idChecklist, idCheckItem, value)
+
+	hash = Hash.new
+	hash[:idChecklist] = idChecklist
+	hash[:idCheckItem] = idCheckItem
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/checklist/"+idChecklist+"/checkItem/"+idCheckItem+"/pos", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a checkitem's state.
+def putCardCheckItemPosition(cardId, idChecklist, idCheckItem, value)
+
+	hash = Hash.new
+	hash[:idChecklist] = idChecklist
+	hash[:idCheckItem] = idCheckItem
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/checklist/"+idChecklist+"/checkItem/"+idCheckItem+"/state", hash 
+	response = JSON.parse(response)	
+end
+
+# Close or open a card.
+def putCardClose(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/closed", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's description.
+def putCardDesc(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/desc", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's due date.
+def putCardDue(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/due", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's Card Cover.
+def putCardIdAttachmentCover(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/idAttachmentCover", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's board.
+def putCardIdBoard(cardId, value, idList)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:idList] = idList if !idList.nil?
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/idBoard", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's list.
+def putCardIdList(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/idLisr", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's name.
+def putCardName(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/name", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a card's position.
+def putCardPos(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/pos", hash 
+	response = JSON.parse(response)	
+end
+
+# Subscribe to a card.
+def putCardSubscribed(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/cards/"+cardId+"/subscribed", hash 
+	response = JSON.parse(response)	
+end
+
+# Create a new card.
+def postCard(name, desc, pos, idList, idCardSource, keepFromSource)
+	
+	hash = Hash.new
+	hash[:name] = name
+	hash[:desc] = desc if !desc.nil?
+	hash[:pos] = pos if !pos.nil?	
+	hash[:idList] = idList if !idList.nil?	
+	hash[:idCardSource] = idCardSource if !idCardSource.nil?
+	hash[:keepFromSource] = keepFromSource if !keepFromSource.nil?	
+	hash[:key] = $key
+	hash[:token] = $token	
+	
+	response = RestClient.post 'https://api.trello.com/1/cards', hash
+	response = JSON.parse(response)
+end
+
+# Post a comment.
+def postCardComment(cardId, text)
+
+	hash = Hash.new
+	hash[:text] = text
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.post 'https://api.trello.com/1/cards/'+cardId+'/actions/comments', hash
+	response = JSON.parse(response)
+end
+
+# Add an attachment.
+def postCardAttachment(cardId, file, url, name, mimeType)
+
+	hash = Hash.new
+	hash[:file] = file if !file.nil?
+	hash[:url] = url if !url.nil?	
+	hash[:name] = name if !name.nil?	
+	hash[:mimeType] = mimeType if !mimeType.nil?	
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.post 'https://api.trello.com/1/cards/'+cardId+'/attachments', hash
+	response = JSON.parse(response)
+end
+
+# Add a checklist to a card.
+def postCardChecklist(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.post 'https://api.trello.com/1/cards/'+cardId+'/checklists', hash
+	response = JSON.parse(response)
+end
+
+# Add a label to a card.
+def postCardLabel(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.post 'https://api.trello.com/1/cards/'+cardId+'/labels', hash
+	response = JSON.parse(response)
+end
+
+# Assign a member to a card.
+def postCardMember(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.post 'https://api.trello.com/1/cards/'+cardId+'/members', hash
+	response = JSON.parse(response)
+end
+
+# Add members which voted for the card.
+def postCardMembersVoted(cardId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.post 'https://api.trello.com/1/cards/'+cardId+'/membersVoted', hash
+	response = JSON.parse(response)
+end
+
+# Delete a card.
+def deleteCard(cardId)
+	
+	hash = Hash.new
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId, hash
+	response = JSON.parse(response)
+end
+
+# Delete a comment.
+def deleteCardComment(cardId, idAction)
+
+	hash = Hash.new
+	hash[:idAction] = idAction
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId+'/actions/'+idAction+'/comments', hash
+	response = JSON.parse(response)
+end
+
+# Delete an attachment.
+def deleteCardAttachment(cardId, idAttachment)
+
+	hash = Hash.new
+	hash[:idAttachment] = idAttachment
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId+'/attachments/'+idAttachment, hash
+	response = JSON.parse(response)
+end
+
+# Delete a checklist.
+def deleteCardChecklist(cardId, idChecklist)
+
+	hash = Hash.new
+	hash[:idChecklist] = idChecklist
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId+'/checklists/'+idChecklist, hash
+	response = JSON.parse(response)
+end
+
+# Delete a label.
+def deleteCardAttachment(cardId, color)
+
+	hash = Hash.new
+	hash[:color] = color
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId+'/labels/'+color, hash
+	response = JSON.parse(response)
+end
+
+# Delete a assigned member.
+def deleteCardMember(cardId, idMember)
+
+	hash = Hash.new
+	hash[:idMember] = idMember
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId+'/members/'+idMember, hash
+	response = JSON.parse(response)
+end
+
+# Delete a assigned member.
+def deleteCardMembersVoted(cardId, idMember)
+
+	hash = Hash.new
+	hash[:idMember] = idMember
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/cards/'+cardId+'/membersVoted/'+idMember, hash
+	response = JSON.parse(response)
+end
+
+# Get information about a checklist.
+def getChecklist(idChecklist)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a checklist.
+def getChecklistField(idChecklist, field)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get information about the board of a checklist.
+def getChecklistBoard(idChecklist)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"/board?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of the board of a checklist.
+def getChecklistBoardField(idChecklist, field)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"/board/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get information about the cards of a checklist.
+def getChecklistCards(idChecklist)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"/cards?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Filter the cards of a checklist.
+def getChecklistCardsFilter(idChecklist, filter)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"/board/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get the checkitems of a checklist.
+def getChecklistCheckItems(idChecklist)
+	response = RestClient.get("https://api.trello.com/1/checklists/"+idChecklist+"/checkItems?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Change a checklist.
+def putChecklist(idChecklist, name)
+
+	hash = Hash.new
+	hash[:name] = name if !name.nil?
+
+	response = RestClient.put "https://api.trello.com/1/checklists/"+idChecklist+"?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Change a checklist's name.
+def putChecklistName(idChecklist, value)
+
+	hash = Hash.new
+	hash[:value] = value if !value.nil?
+
+	response = RestClient.put "https://api.trello.com/1/checklists/"+idChecklist+"/name?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Create a new checklist.
+def postChecklist(name, idBoard)
+
+	hash = Hash.new	
+	hash[:name] = name
+	hash[:idBoard] = idBoard
+	hash[:key] = $key
+	hash[:token] = $token
+	
+	response = RestClient.post 'https://api.trello.com/1/checklists', hash
+	response = JSON.parse(response)
+end
+
+# Add a new item to a checklist.
+def postCheckItem(checklistId, name, pos)
+
+	hash = Hash.new	
+	hash[:name] = name
+	hash[:pos] = pos if !pos.nil?
+	hash[:key] = $key
+	hash[:token] = $token	
+	
+	response = RestClient.post 'https://api.trello.com/1/checklists/'+checklistId+'/checkItems', hash
+	response = JSON.parse(response)
+end
+
+# Delete a check item.
+def deleteChecklistCheckitem(idChecklist, idCheckItem)
+	hash = Hash.new
+	hash[:key] = $key
+	hash[:token] = $token	
+
+	response = RestClient.delete 'https://api.trello.com/1/checklists/'+idChecklist+'/checkItems/'+idCheckItem, hash
+	response = JSON.parse(response)
+end
+
+# Close a list.
+def putCloseList(listId)
+	response = RestClient.put('https://api.trello.com/1/lists/'+listId+'/closed',
+		:value => true,
+		:key =>$key,
+		:token =>$token
+	)
+	response = JSON.parse(response)
+end 
+
+# Create a new list.
+def postList(listName, idBoard)
+	response = RestClient.post(
+		'https://api.trello.com/1/lists',
+		:name => listName, 
+		:idBoard => idBoard,
+		:key=>$key,
+		:token=>$token
+	)
+	response = JSON.parse(response)
+end 
+
+# Get basic information of a list.
 def getList(listId)
 	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"?key="+$key+"&token="+$token)
 	list = JSON.parse(list)	
-end
+end 
 
-# Get basic information of a card as hash.
-def getSingleCard(cardId)
-	card = RestClient.get("https://api.trello.com/1/cards/"+cardId+"?key="+$key+"&token="+$token)
-	card = JSON.parse(card)
-end
+# Get a single field of a list.
+def getListField(listId, field)
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"/"+field+"?key="+$key+"&token="+$token)
+	list = JSON.parse(list)	
+end 
 
-# Get basic information of all cards of a board as hash.
-def getCardsByBoard(boardId)
-	board = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/cards?key="+$key+"&token="+$token+"&filter=open")
-	board = JSON.parse(board)
-end
-
-# Get basic information of all cards of a list as hash.
+# Get basic information of all cards of a list.
 def getCardsByList(listId)
 	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"/cards?key="+$key+"&token="+$token+"&filter=open")
 	list = JSON.parse(list)
 end
 
-# Get all information of all specified cards in detail as hash.
+# Get all actions of a list.
+def getListActions(listId)
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"/actions?key="+$key+"&token="+$token)
+	list = JSON.parse(list)	
+end 
+
+# Get board of a list.
+def getListBoard(listId)
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"/board?key="+$key+"&token="+$token)
+	list = JSON.parse(list)	
+end 
+
+# Get a single field of a board of a list.
+def getListBoardField(listId, field)
+	list = RestClient.get("https://api.trello.com/1/lists/"+listId+"/board/"+field+"?key="+$key+"&token="+$token)
+	list = JSON.parse(list)	
+end 
+
+# Change a list.
+def putList(listId, name, closed, pos, subscribed)
+
+	hash = Hash.new
+	hash[:name] = name if !name.nil?
+	hash[:closed] = closed if !closed.nil?
+	hash[:pos] = pos if !pos.nil?
+	hash[:subscribed] = subscribed if !subscribed.nil?
+
+	response = RestClient.put "https://api.trello.com/1/list/"+listId+"?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Change a list's name.
+def putListName(listId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+
+	response = RestClient.put "https://api.trello.com/1/list/"+listId+"/name?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Change a list's position.
+def putListName(listId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+
+	response = RestClient.put "https://api.trello.com/1/list/"+listId+"/pos?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Change a list's subscribed.
+def putListName(listId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+
+	response = RestClient.put "https://api.trello.com/1/list/"+listId+"/subscribed?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Add a new card to a list.
+def postListCards(listId, name, desc)
+
+	hash = Hash.new
+	hash[:name] = name
+	hash[:desc] = desc if !desc.nil?
+
+	response = RestClient.post "https://api.trello.com/1/list/"+listId+"/cards?key="+$key+"&token="+$token+"&filter=open", hash
+	response = JSON.parse(response)
+end
+
+# Get basic information of all cards of a board.
+def getCardsByBoard(boardId)
+	board = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/cards?key="+$key+"&token="+$token+"&filter=open")
+	board = JSON.parse(board)
+end
+
+# Get all information of all specified cards in detail.
 def getCardsAsArray(arrayCardsStd, downloads = true)
 	arrayCardsFull = Array.new
 	directoryNameAttachments = File.join(Dir.tmpdir, "attachments")
@@ -148,7 +1095,7 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 		# end export members		
 		
 		# export checklists
-		hasChecklist = getChecklist(card['id']) 
+		hasChecklist = getCardChecklist(card['id']) 
 		
 		if hasChecklist[0] != nil
 			arrayChecklists = Array.new
@@ -194,7 +1141,7 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 		
 		# export attachments
 		if card['badges']['attachments'] != 0
-			attachments = getAttachment(card['id'])			
+			attachments = getCardAttachments(card['id'])			
 			hashAttachmentsForCard = Hash.new			
 			hashAttachmentsForCard['attachments'] = attachments			
 			card = card.merge(hashAttachmentsForCard)			
@@ -258,16 +1205,6 @@ def putCloseBoard(boardId)
 	response = JSON.parse(response)
 end
 
-# Close a list.
-def putCloseList(listId)
-	response = RestClient.put('https://api.trello.com/1/lists/'+listId+'/closed',
-		:value => true,
-		:key =>$key,
-		:token =>$token
-	)
-	response = JSON.parse(response)
-end
-
 # Delete an organization.
 def deleteOrganization(orgId)
 	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"?key="+$key+"&token="+$token+"&filter=open")
@@ -289,58 +1226,24 @@ def postOrganization(orgName, orgDisplayName, orgDesc, orgWebsite)
 end
 
 # Create a new board.
-def postBoard(boardName, boardDesc, idOrganization, permissionLevel, selfJoin, invitations, comments, voting)
-	response = RestClient.post(
-		'https://api.trello.com/1/boards',
-		:name => boardName, 
-		:desc => boardDesc,
-		:idOrganization => idOrganization,
-		:prefs_permissionLevel => permissionLevel,
-		:prefs_selfJoin => selfJoin,
-		:prefs_invitations => invitations,
-		:prefs_comments => comments,
-		:prefs_voting => voting,
-		:key => $key,
-		:token => $token
-	)
-	response = JSON.parse(response)
-end
+def postBoard(name, desc, idOrganization, idBoardSource, keepFromSource, permissionLevel, cardCovers, selfJoin, invitations, comments, voting)
 
-# Create a new list.
-def postList(listName, idBoard)
-	response = RestClient.post(
-		'https://api.trello.com/1/lists',
-		:name => listName, 
-		:idBoard => idBoard,
-		:key=>$key,
-		:token=>$token
-	)
-	response = JSON.parse(response)
-end
+	hash = Hash.new
+	hash[:name] = name if !name.nil?
+	hash[:desc] = desc if !desc.nil?  
+	hash[:idOrganization] = idOrganization if !idOrganization.nil?
+	hash[:idBoardSource] = idBoardSource if idBoardSource
+	hash[:keepFromSource] = keepFromSource if keepFromSource
+	hash[:prefs_permissionLevel] = permissionLevel if !permissionLevel.nil?
+	hash[:prefs_selfJoin] = selfJoin if !selfJoin.nil?
+	hash[:prefs_cardCovers] = cardCovers if !cardCovers.nil?
+	hash[:prefs_invitations] = invitations if !invitations.nil?
+	hash[:prefs_voting] = voting if !voting.nil?
+	hash[:prefs_comments] = comments if !comments.nil?
+	hash[:key] = $key
+	hash[:token] = $token
 
-# Create a new card.
-def postCard(cardName, cardDesc, cardPos, idList)
-	response = RestClient.post(
-		'https://api.trello.com/1/cards',
-		'name' => cardName,
-		'desc' => cardDesc,
-		'pos' => cardPos,
-		'idList' => idList,
-		'key'=>$key,
-		'token'=>$token
-	)
-	response = JSON.parse(response)
-end
-
-# Create a new checklist.
-def postChecklist(name, idBoard)
-	response = RestClient.post(
-		'https://api.trello.com/1/checklists',
-		:name => name,
-		:idBoard => idBoard,
-		:key => $key,
-		:token => $token
-	)
+	response = RestClient.post 'https://api.trello.com/1/boards', hash
 	response = JSON.parse(response)
 end
 
@@ -371,7 +1274,119 @@ end
 
 
 
+
+
+
+
 ### Additional card information
+
+# Get a card action.
+def getAction(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a specific field of an action.
+def getActionField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get the board of an action.
+def getActionBoard(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/board?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a single field of the board of an action.
+def getActionBoardField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/board/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get the list of an action.
+def getActionList(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/list?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a single field of the list of an action.
+def getActionListField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/list/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get the card of an action.
+def getActionCard(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/card?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a single field of the card of an action.
+def getActionCardField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/card/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get the member of an action.
+def getActionMember(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/member?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a single field of the member of an action.
+def getActionMemberField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/member/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get the creator of an action.
+def getActionMemberCreator(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/memberCreator?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a single field of the creator of an action.
+def getActionMemberCreatorField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/memberCreator/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get the organization of an action.
+def getActionOrganization(actionId)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/organization?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Get a single field of the organization of an action.
+def getActionOrganizationField(actionId, field)
+	actions = RestClient.get("https://api.trello.com/1/actions/"+actionId+"/organization/"+field+"?key="+$key+"&token="+$token)
+	actions = JSON.parse(actions)
+end
+
+# Change the text of an action.
+def putActionText(actionId, text)
+	response = RestClient.put(
+			'https://api.trello.com/1/actions/'+actionId+'/text',
+			:value       	=>  text,
+			:key        	=>  $key,
+			:token   			=>  $token
+	)
+	response = JSON.parse(response)
+end
+
+# Delete an action.
+def deleteAction(actionId)
+	response = RestClient.delete('https://api.trello.com/1/actions/'+actionId)
+	response = JSON.parse(response)
+end
+	
+
+
+
+
+
+
 
 # Get all card actions.
 def getCardActions(cardId)
@@ -410,29 +1425,6 @@ def isCompleted(cardId, itemId)
 	end
 
 	return false
-end
-
-# Get all checklists of a card.
-def getChecklist(cardId)
-	checklists = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/checklists?key="+$key+"&token="+$token)
-	data = JSON.parse(checklists)
-end
-
-# Get all attachments of a card.
-def getAttachment(cardId)
-	attachments = RestClient.get("https://api.trello.com/1/cards/"+cardId+"/attachments?key="+$key+"&token="+$token)
-	data = JSON.parse(attachments)
-end
-
-# Add a new item to a checklist.
-def postCheckItem(checklistId, name)
-	response = RestClient.post(
-		'https://api.trello.com/1/checklists/'+checklistId+'/checkItems',
-		:name => name,
-		:key =>$key,
-		:token=>$token
-	)
-	response = JSON.parse(response)
 end
 
 # Change a check item's status.
@@ -627,8 +1619,8 @@ end
 
 # Post several cards as Joomla articles to a specified section and category in Joomla.
 def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
-	
-	card = getSingleCard(cardId)
+
+	card = getCard(cardId)
 	title = card['name']	
 	description = Kramdown::Document.new(card['desc']).to_html
 	
@@ -640,7 +1632,7 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 	end
 	
 	# attachments
-	hasAttachment = getAttachment(cardId)
+	hasAttachment = getCardAttachments(cardId)
 	
 	if hasAttachment[0] != nil
 		description += "<ul>"		
@@ -653,7 +1645,7 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 	
 	# checklists
 	# export checklists
-	hasChecklist = getChecklist(cardId) 
+	hasChecklist = getCardChecklist(cardId) 
 	
 	if hasChecklist[0] != nil
 		hasChecklist.each do |checklist| 			
@@ -886,164 +1878,3 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 		end
 	end
 end
-
-=begin
-def trelloToWordpressMultiple(title, created, cardId, sectionid, catid, description='<p>NO U!</p>', attachments=Hash.new)
-	
-	dbhost = 'localhost'
-	dbuser = 'root'
-	dbpassword = 'jMuaeObS4a'
-	db = 'joomla15'
-	
-	description = Kramdown::Document.new(description).to_html
-
-	# attachments
-	if attachments != nil
-		description << "<ul>"
-		i = 0
-		while i < attachments.length do
-			description << "<li><a href=\""+attachments[i]['url']+"\">\""+attachments[i]['name']+"\"</a></li>"
-			i += 1
-		end
-		description << "</ul>"
-	end
-	# end attachments
-
-	title.downcase = title.downcase	
-
-	#DB connection
-	my = Mysql.init
-	my.options(Mysql::SET_CHARSET_NAME, 'utf8')
-	my.real_connect(dbhost, dbuser, dbpassword, db)
-	my.query("SET NAMES utf8")
-
-	# checking if this acrticle already exists
-	existingArticle = nil
-	existingArticleQuery = my.query("
-		SELECT id, created, modified
-		FROM jos_content 
-		WHERE metadata='"+cardId+"'
-	")
-
-	# if article doesn't exist insert it into the db
-	if existingArticleQuery.num_rows == 0
-		stmt = my.prepare("
-			INSERT INTO jos_content (
-				title, 
-				alias, 
-				`introtext`, 
-				state, 
-				sectionid, 
-				catid, 
-				created, 
-				created_by, 
-				modified,
-				parentid, 
-				ordering, 
-				access,					
-				metadata
-			)
-			VALUES (
-				'"+title+"', 
-				'"+title.downcase+"', 
-				'"+description.gsub(/'/, '&#39;')+"', 
-				1, 
-				'"+sectionid+"', 
-				'"+catid+"', 
-				'"+created+"', 
-				62, 
-				'"+created+"',
-				0, 
-				1, 
-				0,
-				'"+cardId+"'
-			)
-		")
-
-		stmt.execute
-
-		# identify id of the new article
-		newArticleId = nil
-		newArticles = my.query("
-			SELECT id 
-			FROM jos_content 
-			WHERE created='"+created+"' 
-			AND title='"+title+"'
-		")
-		newArticles.each do |thisid|
-			newArticleId = thisid[0]
-		end
-
-		# insert the new article into the menu
-		stmt = my.prepare("
-			INSERT INTO jos_menu (
-				menutype,
-				name, 
-				alias, 
-				link, 
-				type, 
-				published, 
-				parent, 
-				componentid, 
-				sublevel, 
-				access, 
-				lft, 
-				rgt) 
-			VALUES (
-				'mainmenu', 
-				'"+title+"', 
-				'"+title.downcase+"', 
-				'index.php?option=com_content&view=article&id="+newArticleId+"', 
-				'component', 
-				1, 
-				27, 
-				20, 
-				1, 
-				0, 
-				0, 
-				0
-			)
-		")
-		stmt.execute
-		pp cardId+': New article!'
-	else
-		# this should be only one because per Trello card it should only exist one article in Joomla
-		existingArticleQuery.each do |thisArticle|				
-
-			existingId = thisArticle[0]
-			existingModified = thisArticle[2]
-
-			# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla
-			if existingModified != created
-				stmt = my.prepare("
-					UPDATE jos_content 
-					SET
-						title = '"+title+"',
-						alias = '"+title.downcase+"',
-						`introtext` = '"+description.gsub(/'/, '&#39;')+"',
-						state = 1,
-						sectionid = 5,
-						catid = 34,
-						created = '"+created+"',
-						created_by = 62,
-						modified = '"+created+"',
-						parentid = 0,
-						ordering = 1,
-						access = 0
-					WHERE
-						metadata = '"+cardId+"'
-				")
-				stmt.execute
-				pp cardId+': Changed!'
-			else 
-				pp +' ('+cardId+'): Nothing changed.'
-			end
-
-			#exit
-		end
-	end
-
-	my.close if my
-
-end
-=end

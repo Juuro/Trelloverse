@@ -9,8 +9,8 @@ require './classes/CLical.rb'
 
 options = CLcalendar.parse(ARGV)
 
-$key = options.key.first
-$token = options.token.first
+$key = options.key
+$token = options.token
 
 puts "Member: "+getMember('me')['username']
 
@@ -47,7 +47,7 @@ end
 
 if !options.cards.nil?
 	options.cards.each do |cardId|
-		cardsByCard = getSingleCard(cardId)
+		cardsByCard = getCard(cardId)
 		cardsToImport.push(cardsByCard)
 	end
 end

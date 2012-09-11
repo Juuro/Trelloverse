@@ -46,7 +46,7 @@ end
 
 if !options.cards.nil?
 	options.cards.each do |cardId|
-		cardsByCard = getSingleCard(cardId)
+		cardsByCard = getCard(cardId)
 		cardsToImport.push(cardsByCard)
 	end
 end

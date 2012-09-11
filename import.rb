@@ -59,7 +59,7 @@ backup['organizations'].each do |orga|
 	begin
 		response = postOrganization(orga['name'], orga['displayName'], orga['desc'], orga['website'])
 	rescue => e		
-		puts "\t"+e.response+" ("+orga['name']+")"
+		puts "\t"+e+" ("+orga['name']+")"
 	else		
 		hashOrganizations[orga['id']] = response['id']
 		
@@ -73,10 +73,10 @@ backup['boards'].each do |board|
 
 	prefs = board['prefs']
 	
-	begin
-		response = postBoard(board['name'], board['desc'], hashOrganizations[board['idOrganization']], prefs['permissionLevel'], prefs['selfJoin'], prefs['invitations'], prefs['comments'], prefs['voting'])
+	begin	
+		response = postBoard(board['name'], board['desc'], hashOrganizations[board['idOrganization']], nil, nil, prefs['permissionLevel'], nil, prefs['selfJoin'], prefs['invitations'], prefs['comments'], prefs['voting'])
 	rescue => e
-		puts "\t"+e.response+" ("+board['name']+")"
+		puts "\t"+e+" ("+board['name']+")"
 	else				
 		hashBoards[board['id']] = response['id']
 		
@@ -94,7 +94,7 @@ backup['members'].each do |board|
 		begin
 			response = postMemberInviteBoard(hashBoards[board['id']], member['id'])		
 		rescue => e
-			puts "\t"+e.response
+			puts "\t"+e
 		else 
 			puts "\tMember "+member['id']+" ("+response['idMemberInvited']+") invited!"
 		end
@@ -117,7 +117,7 @@ hashBoards.each do |key, value|
 		begin
 			response = putCloseList(list['id'])
 		rescue => e
-			puts e.response
+			puts e
 		else
 			puts "List "+list['id']+" closed!"
 		end
@@ -130,7 +130,7 @@ backup['lists'].each do |list|
 	begin
 		response = postList(list['name'], hashBoards[list['idBoard']])		
 	rescue => e
-		puts e.response
+		puts e
 	else
 		puts "List "+response['name']+" ("+response['id']+") added!"
 		
@@ -142,9 +142,9 @@ puts "\n----- IMPORT CARDS -----\n\n"
 
 backup['cards'].each do |card|		
 	begin
-		response = postCard(card['name'], card['desc'], card['pos'], hashLists[card['idList']])		
+		response = postCard(card['name'], card['desc'], card['pos'], hashLists[card['idList']], nil, nil)		
 	rescue => e
-		puts ""+e.response
+		puts e
 	else
 		puts "Card "+response['name']+" ("+response['id']+") added!"
 		
@@ -158,7 +158,7 @@ backup['cards'].each do |card|
 		begin
 			response = postMemberAddCard(hashCards[card['id']], member) 
 		rescue => e
-			puts "\t"+e.response
+			puts e.response
 		else
 			puts "\tMember \""+response.first['username']+"\" ("+response.first['id']+") added!"			
 		end 
@@ -173,7 +173,7 @@ backup['cards'].each do |card|
 			begin
 				response = postChecklist(checklist['name'], hashBoards[card['idBoard']])		
 			rescue => e
-				puts ""+e.response
+				puts e
 			else
 				puts "\tChecklist \""+response['name']+"\" ("+response['id']+") added!"
 				checklistId = response['id']
@@ -183,7 +183,7 @@ backup['cards'].each do |card|
 				response = postAddChecklistToCard(hashCards[card['id']], checklistId)		
 				
 			rescue => e
-				puts ""+e.response
+				puts e
 			else
 				puts "\tChecklist \""+response.first['name']+"\" ("+response.first['id']+") added to card!"				
 			end
@@ -191,9 +191,9 @@ backup['cards'].each do |card|
 			checklist['items'].each_with_index do |item, index|			
 				
 				begin
-					response = postCheckItem(checklistId, item['name'])
+					response = postCheckItem(checklistId, item['name'], nil)
 				rescue => e
-					puts e.response
+					puts e
 				else
 					thisItem = response.last
 					itemId = thisItem['id']
@@ -202,13 +202,13 @@ backup['cards'].each do |card|
 				begin
 					response = putCheckItemStatus(hashCards[card['id']], checklistId, itemId, item['completed'])
 				rescue => e
-					puts e.response
+					puts e
 				end
 				
 				begin
 					response = putCheckItemPos(hashCards[card['id']], checklistId, itemId, item['pos'])
 				rescue => e
-					puts e.response
+					puts e
 				end
 
 				puts "\t\tItem \""+thisItem['name']+"\" ("+thisItem['id']+") with completed=\""+item['completed'].to_s+"\" added!" 					
@@ -222,7 +222,7 @@ backup['cards'].each do |card|
 		begin
 			response = postLabel(hashCards[card['id']], label['color'])
 		rescue => e
-			puts e.response
+			puts e
 		else
 			puts "\tLabel \""+label['color']+"\" added!"	
 		end
@@ -241,7 +241,7 @@ backup['cards'].each do |card|
 			begin
 				response = postComment(hashCards[card['id']], commentText)
 			rescue => e
-				puts e.response
+				puts e
 			else
 				puts "\tComment \""+comment['data']['text']+"\" added!"
 			end			
@@ -268,7 +268,7 @@ backup['cards'].each do |card|
 				begin
 					response = postAttachments(hashCards[card['id']], attachmentFile, attachment['name'])
 				rescue => e
-					puts e.response
+					puts e
 				else
 					File.delete(attachmentFile) 
 					puts "\tAttachment \""+File.basename(attachment['url'])+"\" added!"
@@ -283,7 +283,7 @@ backup['cards'].each do |card|
 		begin
 			response = putDueDate(hashCards[card['id']], card['due'])
 		rescue => e
-			puts e.response
+			puts e
 		else
 			puts "\tDue Date \""+card['due'].to_s+"\" added!"	
 		end
@@ -300,7 +300,7 @@ backup['cards'].each do |card|
 				begin
 					response = postVoting(hashCards[card['id']], member)
 				rescue => e
-					puts e.response
+					puts e
 				else
 					puts "\tMember \""+member+"\" voted!"
 				end				
@@ -314,7 +314,7 @@ backup['cards'].each do |card|
 		begin
 			response = putSubscribe(hashCards[card['id']], true)
 		rescue => e
-			puts e.response
+			puts e
 		else
 			puts "\tSubscribed!"
 		end
