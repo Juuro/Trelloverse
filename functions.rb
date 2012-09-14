@@ -259,14 +259,14 @@ end
 
 # Invite members to a board.
 def postBoardInvitations(boardId, memberId, email, type)
-	
+
 	hash = Hash.new
 	hash[:idMember] = memberId if !memberId.nil?
 	hash[:email] = email if !email.nil?
 	hash[:type] = type if !type.nil?
 	hash[:key] = $key
 	hash[:token] = $token
-	
+
 	response = RestClient.post "https://api.trello.com/1/boards/"+boardId+"/invitations", hash 
 	response = JSON.parse(response)	
 end
@@ -336,7 +336,7 @@ end
 # Formatting dates for post processing.
 def getDate(date, format='de')
 	fdate = Time.iso8601(date).getlocal
-	
+
 	if format=='de'
 		return fdate.strftime('%d.%m.%Y %H:%M:%S')
 	elsif format=='us'
@@ -684,12 +684,12 @@ end
 # Get basic information of all cards of a organization.
 def getCardsByOrganization(orgId)
 	boards = getBoardsByOrganization(orgId)
-	
+
 	cards = Array.new
 	boards.each do |board|
 		cards += getCardsByBoard(board['id'])
 	end
-	
+
 	return cards
 end
 
@@ -957,7 +957,7 @@ end
 
 # Create a new card.
 def postCard(name, desc, pos, idList, idCardSource, keepFromSource)
-	
+
 	hash = Hash.new
 	hash[:name] = name
 	hash[:desc] = desc if !desc.nil?
@@ -967,7 +967,7 @@ def postCard(name, desc, pos, idList, idCardSource, keepFromSource)
 	hash[:keepFromSource] = keepFromSource if !keepFromSource.nil?	
 	hash[:key] = $key
 	hash[:token] = $token	
-	
+
 	response = RestClient.post 'https://api.trello.com/1/cards', hash
 	response = JSON.parse(response)
 end
@@ -1049,7 +1049,7 @@ end
 
 # Delete a card.
 def deleteCard(cardId)
-	
+
 	hash = Hash.new
 	hash[:key] = $key
 	hash[:token] = $token	
@@ -1200,7 +1200,7 @@ def postChecklist(name, idBoard)
 	hash[:idBoard] = idBoard
 	hash[:key] = $key
 	hash[:token] = $token
-	
+
 	response = RestClient.post 'https://api.trello.com/1/checklists', hash
 	response = JSON.parse(response)
 end
@@ -1213,7 +1213,7 @@ def postCheckItem(checklistId, name, pos)
 	hash[:pos] = pos if !pos.nil?
 	hash[:key] = $key
 	hash[:token] = $token	
-	
+
 	response = RestClient.post 'https://api.trello.com/1/checklists/'+checklistId+'/checkItems', hash
 	response = JSON.parse(response)
 end
@@ -1380,7 +1380,7 @@ end
 def getCardsAsArray(arrayCardsStd, downloads = true)
 	arrayCardsFull = Array.new
 	directoryNameAttachments = File.join(Dir.tmpdir, "attachments")
-	
+
 	arrayCardsStd.each do |card|
 		# export members
 		memberArray = Array.new
@@ -1392,10 +1392,10 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 		membersForCard['members'] = memberArray
 		card = card.merge(membersForCard)
 		# end export members		
-		
+
 		# export checklists
 		hasChecklist = getCardChecklist(card['id']) 
-		
+
 		if hasChecklist[0] != nil
 			arrayChecklists = Array.new
 			checkItemStates = card['checkItemStates']
@@ -1421,14 +1421,14 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 				arrayChecklists.push(hashChecklist)
 				hashChecklist = nil
 			end
-			
+
 			hashCheckListsForCard = Hash.new
 			hashCheckListsForCard['checklists'] = arrayChecklists
-			
+
 			card = card.merge(hashCheckListsForCard)
 		end
 		# end export checklists
-		
+
 		# export comments
 		if card['badges']['comments'] != 0
 			comments = getCardComments(card['id'])
@@ -1437,28 +1437,28 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 			card = card.merge(hashCommentsForCard)
 		end
 		# end export comments
-		
+
 		# export attachments
 		if card['badges']['attachments'] != 0
 			attachments = getCardAttachments(card['id'])			
 			hashAttachmentsForCard = Hash.new			
 			hashAttachmentsForCard['attachments'] = attachments			
 			card = card.merge(hashAttachmentsForCard)			
-			
+
 			if downloads
 				# download files
 				attachments.each do |attachment|
 					fileDomain = URI.parse(attachment['url']).host
 					filePath = attachment['url'].gsub(URI.parse(attachment['url']).scheme+"://"+URI.parse(attachment['url']).host, '')
 					fileExtension = File.extname(attachment['url'])
-					
+
 					fileName = attachment['id']+File.basename(attachment['url'])
 					puts "Downloading \'"+fileName+"\'"
-								
+
 					if !Dir.exists?(directoryNameAttachments)
 						Dir::mkdir(directoryNameAttachments)
 					end
-					
+
 					Net::HTTP.start(fileDomain) do |http|
 							resp = http.get(filePath)
 							open(directoryNameAttachments+"/"+fileName, "wb") do |file|
@@ -1470,7 +1470,7 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 			end       
 		end	
 		# end export attachments
-		
+
 		# export votes
 		if card['badges']['votes'] > 0
 			response = RestClient.get(
@@ -1486,10 +1486,10 @@ def getCardsAsArray(arrayCardsStd, downloads = true)
 			card = card.merge(hashMembersVotedForCard)	
 		end
 		# end export votes
-		
+
 		arrayCardsFull.push(card)
 	end
-	
+
 	return arrayCardsFull
 end
 
@@ -2033,7 +2033,7 @@ def deleteAction(actionId)
 	response = RestClient.delete('https://api.trello.com/1/actions/'+actionId)
 	response = JSON.parse(response)
 end
-	
+
 
 
 
@@ -2184,9 +2184,9 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 	dbuser = 'root'
 	dbpassword = 'jMuaeObS4a'
 	db = 'joomla15'
-	
+
 	htmlSite = "<h3>Universität Tübingen</h3>"
-	
+
 	htmlSite << "<p> </p>
 	<table style=\"text-align: center;\" border=\"0\">
 	<tbody>
@@ -2195,7 +2195,7 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 	<p style=\"text-align: left; padding-left: 5px;\"><strong><span><strong> Thema</strong></span></strong></p>
 	</td>
 	</tr>"
-	
+
 	i = 0
 	articles.each do |element|
 		title = element.title
@@ -2203,7 +2203,7 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 		if element.attachments != []		
 			attachments = element.attachments
 		end
-		
+
 		htmlSite << "
 		<tr style=\"background-color: "
 		if i.even? 
@@ -2238,24 +2238,24 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 		i += 1
 	end
 	i = nil
-	
+
 	htmlSite << "</tbody>
 	</table>"
-	
+
 	#save to file	
 	fileHtml = File.new("arbeiten.html.tmp", "w+")
 	fileHtml.puts "<!doctype html>
 	<head>
 		<meta charset=\"UTF-8\">
 		<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">
-	
+
 		<title>Abgeschlossene Arbeiten</title>
 	</head>
 	<body>"
 	fileHtml.puts htmlSite	
 	fileHtml.puts "</body></html>"
 	File.rename("arbeiten.html.tmp", "arbeiten.html")
-	
+
 	#save to DB
 	my = Mysql.init
 	my.options(Mysql::SET_CHARSET_NAME, 'utf8')
@@ -2265,9 +2265,9 @@ def trelloToJoomlaSingle(joomlaArticleId, articles)
 	stmt = my.prepare("UPDATE jos_content SET `introtext`='"+htmlSite+"' WHERE id="+joomlaArticleId.to_s)
 	#stmt = my.prepare("UPDATE jos_content SET `introtext`='äüöß' WHERE id="+joomlaArticleId.to_s)
 	stmt.execute
-	
+
 	my.close if my
-	
+
 end
 
 # Post several cards as Joomla articles to a specified section and category in Joomla.
@@ -2276,17 +2276,17 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 	card = getCard(cardId)
 	title = card['name']	
 	description = Kramdown::Document.new(card['desc']).to_html
-	
+
 	changed = nil
 	if !cardUpdated(cardId).empty?
 		changed = getDate(cardUpdated(cardId).first['date'], 'joomla')
 	else
 		changed = getDate(cardCreated(cardId).first['date'], 'joomla')
 	end
-	
+
 	# attachments
 	hasAttachment = getCardAttachments(cardId)
-	
+
 	if hasAttachment[0] != nil
 		description += "<ul>"		
 		hasAttachment.each do |att|	
@@ -2295,11 +2295,11 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 		description += "</ul>"
 	end
 	# end attachments
-	
+
 	# checklists
 	# export checklists
 	hasChecklist = getCardChecklist(cardId) 
-	
+
 	if hasChecklist[0] != nil
 		hasChecklist.each do |checklist| 			
 			description += "<h4>"+checklist['name']+"</h4>"
@@ -2319,7 +2319,7 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 	if joomlaVersion == 2.5
 		#debug
 		puts "Joomla! 2.5"
-		
+
 		# Database connection
 		dbhost = 'localhost'
 		dbuser = 'root'
@@ -2331,7 +2331,7 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 		my.options(Mysql::SET_CHARSET_NAME, 'utf8')
 		my.real_connect(dbhost, dbuser, dbpassword, db)
 		my.query("SET NAMES utf8")
-		
+
 		stmt = my.prepare("INSERT INTO e94bi_content (
 													asset_id, 
 													title, 
@@ -2420,7 +2420,7 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 		dbuser = 'root'
 		dbpassword = 'jMuaeObS4a'
 		db = 'joomla15'
-		
+
 		begin
 			my = Mysql.init
 			my.options(Mysql::SET_CHARSET_NAME, 'utf8')
@@ -2476,7 +2476,7 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 							?
 						)
 					")
-					
+
 					stmt.execute title, title.downcase, description.gsub(/'/, '&#39;'), sectionid, catid, changed, changed, cardId
 					puts 'New article: '+cardId+" : "+title		
 				rescue Mysql::Error => e
@@ -2488,10 +2488,10 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 			else
 				# this should be only one because per Trello card id should only exist one article in Joomla
 				existingArticleQuery.each do |thisArticle|				
-					
+
 					existingId = thisArticle[0]
 					existingModified = thisArticle[2]
-					
+
 					# check if the modiefied timestamp im Trello is different to the modiefied timestamp in Joomla
 					begin 
 						if existingModified != changed
@@ -2502,8 +2502,8 @@ def trelloJoomlaSync(cardId, sectionid, catid, joomlaVersion)
 									alias = '"+title.downcase+"',
 									`introtext` = '"+description.gsub(/'/, '&#39;')+"',
 									state = 1,
-									sectionid = 5,
-									catid = 34,
+									sectionid = "+sectionid+",
+									catid = "+catid+",
 									created = '"+changed+"',
 									created_by = 62,
 									modified = '"+changed+"',
