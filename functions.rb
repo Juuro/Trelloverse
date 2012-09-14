@@ -363,6 +363,291 @@ def getMember(memberId)
 	member = JSON.parse(member)
 end
 
+# Get a single field of a member's information.
+def getMemberField(memberId, field)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a member's action.
+def getMemberActions(memberId)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/actions?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get basic information of all boards of a member.
+def getBoardsByMember(memberId)
+	boards = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boards?key="+$key+"&token="+$token+"&filter=open")
+	boards = JSON.parse(boards)
+end
+
+# Filter a member's boards.
+def getMemberBoardsFilter(memberId, filter)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boards/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a member's board invitations.
+def getMemberBoardsInvited(memberId)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boardsInvited?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a member's board invitations.
+def getMemberBoardsInvitedField(memberId, field)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boardsInvited/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a member's board invitations.
+def getMemberCards(memberId)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/cards?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Filter a member's cards.
+def getMemberCardsFilter(memberId, filter)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/cards/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a member's notifications.
+def getMemberNotifications(memberId)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/notifications?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Filter a member's notifications.
+def getMemberNotifications(memberId, filter)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/notifications/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get basic information of all organizations of a member.
+def getOrganizationsByMember(memberId)
+	orgas = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizations?key="+$key+"&token="+$token+"")
+	orgas = JSON.parse(orgas)
+end
+
+# Filter a member's organizations.
+def getMemberOrganizationsFilter(memberId, filter)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizations/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a member's board organization.
+def getMemberOrganizationsInvited(memberId)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizationsInvited?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a member's organization invitations.
+def getMemberOrganizationsInvitedField(memberId, field)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizationsInvited/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a member's organizations.
+def getMemberTokens(memberId, field)
+	response = RestClient.get("https://api.trello.com/1/members/"+memberId+"/tokens?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Change a member's information.
+def putMember(memberId, fullName, initials, bio)
+
+	hash = Hash.new
+	hash[:fullName] = fullName	
+	hash[:initials] = initials	
+	hash[:bio] = bio	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/members/"+memberId, hash 
+	response = JSON.parse(response)	
+end
+
+# Change a member's bio.
+def putMemberBio(memberId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/members/"+memberId+"/bio", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a member's full name.
+def putMemberFullName(memberId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/members/"+memberId+"/fullName", hash 
+	response = JSON.parse(response)	
+end
+
+# Change a member's initials.
+def putMemberInitials(memberId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/members/"+memberId+"/initials", hash 
+	response = JSON.parse(response)	
+end
+
+
+
+
+### Notifications
+
+# Get basic information about a notification.
+def getNotification(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification.
+def getNotificationField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a notification's board.
+def getNotificationBoard(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/board?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification's board.
+def getNotificationBoardField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/board/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a notification's card.
+def getNotificationCard(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/card?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification's card.
+def getNotificationCardField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/card/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a notification's list.
+def getNotificationList(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/list?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification's list.
+def getNotificationListField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/list/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a notification's member.
+def getNotificationMember(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/member?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification's member.
+def getNotificationMemberField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/member/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a notification's creator.
+def getNotificationMemberCreator(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/memberCreator?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification's creator.
+def getNotificationMemberCreatorField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/memberCreator/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a notification's organization.
+def getNotificationOrganization(notificationId)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/organization?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a notification's organization.
+def getNotificationOrganizationField(notificationId, field)
+	response = RestClient.get("https://api.trello.com/1/notifications/"+notificationId+"/organization/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Change a notification.
+def putNotification(notificationId, unread)
+
+	hash = Hash.new
+	hash[:unread] = unread	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/notifications/"+notificationId, hash 
+	response = JSON.parse(response)	
+end
+
+# Mark a notification read or unread.
+def putNotificationUnread(notificationId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/notifications/"+notificationId+"/unread", hash 
+	response = JSON.parse(response)	
+end
+
+# Mark all notifications read.
+def postNotificationsRead
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/notifications/all/read", hash 
+	response = JSON.parse(response)	
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Check if a member is the same as the actually used account.
 def isThisMe(memberId)
 	if getMember('me')['id'] == memberId
@@ -392,25 +677,9 @@ end
 
 
 
-### Collecting data from Trello
 
-# Get basic information of all boards of a member.
-def getBoardsByMember(memberId)
-	boards = RestClient.get("https://api.trello.com/1/members/"+memberId+"/boards?key="+$key+"&token="+$token+"&filter=open")
-	boards = JSON.parse(boards)
-end
 
-# Get basic information of all organizations of a member.
-def getOrganizationsByMember(memberId)
-	orgas = RestClient.get("https://api.trello.com/1/members/"+memberId+"/organizations?key="+$key+"&token="+$token+"")
-	orgas = JSON.parse(orgas)
-end
 
-# Get basic information of all boards of a organization.
-def getBoardsByOrganization(orgId)
-	boards = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/boards?key="+$key+"&token="+$token+"&filter=open")
-	boards = JSON.parse(boards)
-end
 
 # Get basic information of all cards of a organization.
 def getCardsByOrganization(orgId)
@@ -1071,6 +1340,36 @@ def postListCards(listId, name, desc)
 	response = JSON.parse(response)
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Get basic information of all cards of a board.
 def getCardsByBoard(boardId)
 	board = RestClient.get("https://api.trello.com/1/boards/"+boardId+"/cards?key="+$key+"&token="+$token+"&filter=open")
@@ -1205,25 +1504,379 @@ def putCloseBoard(boardId)
 	response = JSON.parse(response)
 end
 
+
+
+
+
+# Get basic information about an organization.
+def getOrganization(orgId)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of an organization.
+def getOrganizationField(orgId, field)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get all actions of an organization.
+def getOrganizationActions(orgId)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/actions?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get basic information about all boards of a organization.
+def getBoardsByOrganization(orgId)
+	boards = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/boards?key="+$key+"&token="+$token+"&filter=open")
+	boards = JSON.parse(boards)
+end
+
+# Get all actions of an organization.
+def getOrganizationBoardsFilter(orgId, filter)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/boards/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get all members of an organization.
+def getOrganizationMembers(orgId)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/members?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Filter a organization's members.
+def getOrganizationMembersFilter(orgId, filter)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/members/"+filter+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get all card of a member of a organization.
+def getOrganizationMembersCards(orgId, memberId)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/members/"+memberId+"/cards?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get all members who are invited to this organization.
+def getOrganizationMembersInvited(orgId)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/membersInvited?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of all members who are invited to this organization.
+def getOrganizationMembersInvitedField(orgId, field)
+	response = RestClient.get("https://api.trello.com/1/organizations/"+orgId+"/membersInvited/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Change an organization.
+def putOrganization(orgId, orgInviteRestrict, externalMembersDisabled, boardVisibilityRestrict_private, prefs_boardVisibilityRestrict_org, boardVisibilityRestrict_public, name, displayName, desc, website, prefs_permissionLevel)
+
+	hash = Hash.new
+	hash[:prefs_orgInviteRestrict] = orgInviteRestrict	
+	hash[:prefs_externalMembersDisabled] = externalMembersDisabled	
+	hash[:prefs_boardVisibilityRestrict_private] = boardVisibilityRestrict_private	
+	hash[:prefs_boardVisibilityRestrict_org] = prefs_boardVisibilityRestrict_org	
+	hash[:prefs_boardVisibilityRestrict_public] = boardVisibilityRestrict_public	
+	hash[:name] = name	
+	hash[:displayName] = displayName	
+	hash[:desc] = desc	
+	hash[:website] = website	
+	hash[:prefs_permissionLevel] = prefs_permissionLevel	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId, hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's description.
+def putOrganizationDesc(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/desc", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's description.
+def putOrganizationDisplayName(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/displayName", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's member.
+def putOrganizationMembers(orgId, idMember, type)
+
+	hash = Hash.new
+	hash[:idMember] = idMember	
+	hash[:type] = type	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/members/"+idMember, hash 
+	response = JSON.parse(response)	
+end
+
+# Deactivate an organization's member.
+def putOrganizationMembersDeactivated(orgId, idMember, value)
+
+	hash = Hash.new
+	hash[:idMember] = idMember	
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/members/"+idMember+"deactivated", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's name.
+def putOrganizationName(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/name", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's board visibility.
+def putOrganizationRestrictVisOrg(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/prefs/boardVisibilityRestrict/org", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's board visibility.
+def putOrganizationRestrictVisPrivate(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/prefs/boardVisibilityRestrict/private", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's board visibility.
+def putOrganizationRestrictVisPublic(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/prefs/boardVisibilityRestrict/public", hash 
+	response = JSON.parse(response)	
+end
+
+# Disable an organization's external members.
+def putOrganizationExternalMembersDisabled(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/prefs/externalMembersDisabled", hash 
+	response = JSON.parse(response)	
+end
+
+# 
+def putOrganizationOrgInviteRestrict(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/prefs/orgInviteRestrict", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's permission level.
+def putOrganizationPermissionLevel(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/prefs/permissionLevel", hash 
+	response = JSON.parse(response)	
+end
+
+# Change an organization's website.
+def putOrganizationPermissionLevel(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.put "https://api.trello.com/1/organizations/"+orgId+"/website", hash 
+	response = JSON.parse(response)	
+end
+
+# Create a new organization.
+def postOrganization(name, displayName, desc, website)
+
+	hash = Hash.new
+	hash[:name] = name
+	hash[:displayName] = displayName
+	hash[:desc] = desc
+	hash[:website] = website	
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/organizations/", hash 
+	response = JSON.parse(response)	
+end
+
+# Invite new members to an organization.
+def postOrganizationInvitation(orgId, idMember, email, type)
+
+	hash = Hash.new
+	hash[:idMember] = idMember
+	hash[:email] = email
+	hash[:type] = type
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/organizations/"+orgId+"/invitations", hash 
+	response = JSON.parse(response)	
+end
+
+# Response to an invite for an organization.
+def postOrganizationInvitationResponse(orgId, response, invitationTokens)
+
+	hash = Hash.new
+	hash[:response] = response
+	hash[:invitationTokens] = invitationTokens
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/organizations/"+orgId+"/response", hash 
+	response = JSON.parse(response)	
+end
+
+# Add a logo to an organization.
+def postOrganizationLogo(orgId, file)
+
+	hash = Hash.new
+	hash[:file] = file
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.post "https://api.trello.com/1/organizations/"+orgId+"/logo", hash 
+	response = JSON.parse(response)	
+end
+
 # Delete an organization.
 def deleteOrganization(orgId)
 	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"?key="+$key+"&token="+$token+"&filter=open")
 	response = JSON.parse(response)
 end
 
-# Create a new organization.
-def postOrganization(orgName, orgDisplayName, orgDesc, orgWebsite)
-	response = RestClient.post(
-			'https://api.trello.com/1/organizations',
-			:name   => orgName,
-			:displayName => orgDisplayName,
-			:desc => orgDesc,
-			:website => orgWebsite,
-			:key     => $key,
-			:token   => $token
-	)
+# Delete an organization's invitation.
+def deleteOrganizationInvitation(orgId, idInvitation)
+	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"/invitations/"+idInvitation+"?key="+$key+"&token="+$token+"&filter=open")
 	response = JSON.parse(response)
 end
+
+# Delete an organization's logo.
+def deleteOrganizationILogo(orgId)
+	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"/logo?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# 
+def deleteOrganizationMember(orgId, idMember)
+	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"/member/"+idMember+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# 
+def deleteOrganizationMembersAll(orgId, idMember)
+	response = RestClient.delete("https://api.trello.com/1/organizations/"+orgId+"/member/"+idMember+"/all?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# 
+def deleteOrganizationInviteRestrict(orgId, value)
+
+	hash = Hash.new
+	hash[:value] = value
+	hash[:key] = $key
+	hash[:token] = $token
+
+	response = RestClient.delete "https://api.trello.com/1/organizations/"+orgId+"/prefs/orgInviteRestrict", hash 
+	response = JSON.parse(response)	
+end
+
+
+
+# Get basic information about a token.
+def getToken(token)
+	response = RestClient.get("https://api.trello.com/1/tokens/"+token+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a token.
+def getTokenField(token, field)
+	response = RestClient.get("https://api.trello.com/1/tokens/"+token+"/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get basic information about a member of a token.
+def getTokenMember(token)
+	response = RestClient.get("https://api.trello.com/1/tokens/"+token+"/member/?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Get a single field of a member of a token.
+def getTokenMemberField(token)
+	response = RestClient.get("https://api.trello.com/1/tokens/"+token+"/member/"+field+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+# Delete a token.
+def deleteToken(token)
+	response = RestClient.delete("https://api.trello.com/1/tokens/"+token+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+
+# Get the type of an id.
+def getType(id)
+	response = RestClient.get("https://api.trello.com/1/types/"+id+"?key="+$key+"&token="+$token+"&filter=open")
+	response = JSON.parse(response)
+end
+
+
+
+
+
+
+
+
 
 # Create a new board.
 def postBoard(name, desc, idOrganization, idBoardSource, keepFromSource, permissionLevel, cardCovers, selfJoin, invitations, comments, voting)
