@@ -10,4 +10,4 @@ At the moment there are these fully functional uses:
 * Export Trello cards to an iCal file
 * Close all boards 
 
-The dicumentation for each method can be found in the "docu" directory. 
+The documentation in HTML for each method can be found in the "doc" directory.
