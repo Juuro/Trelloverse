@@ -9,3 +9,5 @@ At the moment there are these fully functional uses:
 * Import Trello cards with due dates to Google Calendar
 * Export Trello cards to an iCal file
 * Close all boards 
+
+The dicumentation for each method can be found in the "docu" directory. 
